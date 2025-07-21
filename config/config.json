@@ -1,0 +1,19 @@
+{
+    "token": "YOUR_DISCORD_TOKEN_HERE",
+    "prefix": ".",
+    "remote-users": ["1272998600279986187", "<remote users>"],
+    "autoreply": {
+        "messages": [
+            "https://discord.gg/JYwXWG3aHE"
+        ],
+        "channels": ["1300866628912681073", "<channels>"],
+        "users": ["1272998600279986187","<users>"]
+    },
+    "afk": {
+        "enabled": false,
+        "message": "I am currently AFK. I will respond as soon as possible!"
+    },
+    "copycat": {
+        "users": []
+    }
+}
