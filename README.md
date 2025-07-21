@@ -77,8 +77,8 @@
 
 - **Manual**:
  ```bash
-  $ git clone https://github.com/k4ran909/Orbix.git
-  $ python -m pip install -r requirements.txt
-  $ python main.py
+   git clone https://github.com/k4ran909/Orbix.git
+   python -m pip install -r requirements.txt
+   python main.py
   ```
 
