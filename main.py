@@ -72,6 +72,7 @@ def selfbot_menu(bot):
 \t{y}[{w}#{y}]{w} Total Commands Loaded: 43\n\n
 {y}[{Fore.GREEN}!{y}]{w} SelfBot is now online and ready!""")
 
+
 bot = commands.Bot(command_prefix=prefix, description='not a selfbot', self_bot=True, help_command=None)
 
 @bot.event
@@ -210,7 +211,7 @@ async def ping(ctx):
     await message_to_send.edit(content=f"`{int((time.monotonic() - before) * 1000)} ms`")
 
 @bot.command(aliases=['orbix'])
-async def astraa(ctx):
+async def orbix(ctx):
     await ctx.message.delete()
 
     embed = f"""**MY SOCIAL NETWORKS | Prefix: `{prefix}`**\n
@@ -238,7 +239,7 @@ async def geoip(ctx, ip: str=None):
         > :robot: `Org`\n*{geo['org']}*
         > :alarm_clock: `Timezone`\n*{geo['timezone']}*
         > :electric_plug: `As`\n*{geo['as']}*"""
-        await ctx.send(embed, file=discord.File("img/astraa.gif"))
+        await ctx.send(embed, file=discord.File("img/orbix.gif"))
     except Exception as e:
         await ctx.send(f'> **[**ERROR**]**: Unable to geolocate ip\n> __Error__: `{str(e)}`', delete_after=5)
 
@@ -404,7 +405,7 @@ async def tokeninfo(ctx, usertoken: str=None):
         > :shield: __Account Security__\n\t2FA/MFA Enabled: `{mfa_enabled}`\n\tFlags: `{flags}`
         > :paperclip: __Other__\n\tLocale: `{locale} ({language})`\n\tEmail Verified: `{verified}`"""
 
-            await ctx.send(embed, file=discord.File("img/astraa.gif"))
+            await ctx.send(embed, file=discord.File("img/orbix.gif"))
         except Exception as e:
             await ctx.send(f'> **[**ERROR**]**: Unable to recover token infos\n> __Error__: `{str(e)}`', delete_after=5)
     else:
