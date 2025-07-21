@@ -74,8 +74,8 @@
 1. **Update `config/config.json`**: Enter your bot token and preferred prefix.
 2. **Installation**:
 - **Automated**: Run `setup.bat`. Launch the new file created.
-- **Manual**:
 
+- **Manual**:
  ```bash
   $ git clone https://github.com/k4ran909/Orbix.git
   $ python -m pip install -r requirements.txt
