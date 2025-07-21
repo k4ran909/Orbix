@@ -82,3 +82,6 @@
    python main.py
   ```
 
+- Create a virtual env in Linux:      
+`virtualenv -p /usr/bin/python3 venv`
+`. ./venv/bin/activate`
