@@ -1,13 +1,13 @@
 {
     "token": "YOUR_DISCORD_TOKEN_HERE",
     "prefix": ".",
-    "remote-users": ["1272998600279986187", "<remote users>"],
+    "remote-users": ["1272998600279986187", "REMOTE_USER"],
     "autoreply": {
         "messages": [
             "https://discord.gg/JYwXWG3aHE"
         ],
-        "channels": ["1300866628912681073", "<channels>"],
-        "users": ["1272998600279986187","<users>"]
+        "channels": ["1300866628912681073", "CHANNELS"],
+        "users": ["1272998600279986187","USERS"]
     },
     "afk": {
         "enabled": false,
