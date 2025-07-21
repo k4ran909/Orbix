@@ -132,9 +132,9 @@ async def help(ctx):
     await ctx.message.delete()
 
     help_text = f"""
-**Orbix SelfBot | Prefix: `{prefix}`**\n
+**Orbixx SelfBot | Prefix: `{prefix}`**\n
 **Commands:**\n
-> :space_invader: `{prefix}orbix` - Show my social networks.
+> :space_invader: `{prefix}orbixx` - Show my social networks.
 > :wrench: `{prefix}changeprefix <prefix>` - Change the bot's prefix.  
 > :x: `{prefix}shutdown` - Stop the selfbot.  
 > :notepad_spiral: `{prefix}uptime` - Returns how long the selfbot has been running.
@@ -211,7 +211,7 @@ async def ping(ctx):
     await message_to_send.edit(content=f"`{int((time.monotonic() - before) * 1000)} ms`")
 
 @bot.command(aliases=['orbix'])
-async def orbix(ctx):
+async def orbixx(ctx):
     await ctx.message.delete()
 
     embed = f"""**MY SOCIAL NETWORKS | Prefix: `{prefix}`**\n
@@ -239,7 +239,7 @@ async def geoip(ctx, ip: str=None):
         > :robot: `Org`\n*{geo['org']}*
         > :alarm_clock: `Timezone`\n*{geo['timezone']}*
         > :electric_plug: `As`\n*{geo['as']}*"""
-        await ctx.send(embed, file=discord.File("img/orbix.gif"))
+        await ctx.send(embed, file=discord.File("img/orbixx.gif"))
     except Exception as e:
         await ctx.send(f'> **[**ERROR**]**: Unable to geolocate ip\n> __Error__: `{str(e)}`', delete_after=5)
 
@@ -405,7 +405,7 @@ async def tokeninfo(ctx, usertoken: str=None):
         > :shield: __Account Security__\n\t2FA/MFA Enabled: `{mfa_enabled}`\n\tFlags: `{flags}`
         > :paperclip: __Other__\n\tLocale: `{locale} ({language})`\n\tEmail Verified: `{verified}`"""
 
-            await ctx.send(embed, file=discord.File("img/orbix.gif"))
+            await ctx.send(embed, file=discord.File("img/orbixx.gif"))
         except Exception as e:
             await ctx.send(f'> **[**ERROR**]**: Unable to recover token infos\n> __Error__: `{str(e)}`', delete_after=5)
     else:
