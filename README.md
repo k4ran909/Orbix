@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/badge/License-MIT-important">
   </a>
   <a href="https://github.com/k4ran909">
-    <img src="https://img.shields.io/github/repo-size/k4ran909/Orbix.svg?label=Repo%20size&style=flat-square">
+   <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/k4ran909/Orbix">
   </a>
 </p>
 
