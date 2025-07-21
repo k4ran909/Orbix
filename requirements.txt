@@ -5,3 +5,4 @@ discord.py-self
 gtts
 qrcode
 pyfiglet
+requests
