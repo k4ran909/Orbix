@@ -19,7 +19,7 @@
       "include_thoughts": true,
       "budget_tokens": 4000
     },
-    "dyad_options": {
+    "Orbix_options": {
       "versioned_files": {
         "fileIdToContent": {
           "fd0f9b44a8d543177b124c3b9b5e62da7d0e2683379352e9e2c587d285c36686": "// File contents excluded from context",
@@ -126,6 +126,6 @@
     }
   },
   "headers": {
-    "authorization": "Bearer testdyadkey"
+    "authorization": "Bearer testOrbixkey"
   }
 }

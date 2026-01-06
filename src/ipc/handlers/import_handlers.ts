@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { createLoggedHandler } from "./safe_handle";
 import log from "electron-log";
-import { getDyadAppPath } from "../../paths/paths";
+import { getOrbixAppPath } from "../../paths/paths";
 import { apps } from "@/db/schema";
 import { db } from "@/db";
 import { chats } from "@/db/schema";
@@ -47,7 +47,7 @@ export function registerImportHandlers() {
   // Handler for checking if an app name is already taken
   handle("check-app-name", async (_, { appName }: { appName: string }) => {
     // Check filesystem
-    const appPath = getDyadAppPath(appName);
+    const appPath = getOrbixAppPath(appName);
     try {
       await fs.access(appPath);
       return { exists: true };
@@ -82,7 +82,7 @@ export function registerImportHandlers() {
         throw new Error("Source folder does not exist");
       }
 
-      const destPath = getDyadAppPath(appName);
+      const destPath = getOrbixAppPath(appName);
 
       // Check if the app already exists
       const errorMessage = "An app with this name already exists";
@@ -94,7 +94,7 @@ export function registerImportHandlers() {
           throw error;
         }
       }
-      // Copy the app folder to the Dyad apps directory.
+      // Copy the app folder to the Orbix apps directory.
       // Why not use fs.cp? Because we want stable ordering for
       // tests.
       await copyDirectoryRecursive(sourcePath, destPath);
@@ -114,7 +114,7 @@ export function registerImportHandlers() {
         // Create initial commit
         await gitCommit({
           path: destPath,
-          message: "Init Dyad app",
+          message: "Init Orbix app",
         });
       }
 

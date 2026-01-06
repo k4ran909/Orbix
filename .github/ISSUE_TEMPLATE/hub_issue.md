@@ -1,6 +1,6 @@
 ---
-name: Dyad Hub Issue
-about: Found an issue with dyad.sh/hub?
+name: Orbix Hub Issue
+about: Found an issue with orbix.sh/hub?
 title: "[hub]"
 labels: "hub"
 assignees: ""

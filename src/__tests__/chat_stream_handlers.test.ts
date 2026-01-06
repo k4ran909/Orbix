@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
-  getDyadWriteTags,
-  getDyadRenameTags,
-  getDyadAddDependencyTags,
-  getDyadDeleteTags,
-} from "../ipc/utils/dyad_tag_parser";
+  getOrbixWriteTags,
+  getOrbixRenameTags,
+  getOrbixAddDependencyTags,
+  getOrbixDeleteTags,
+} from "../ipc/utils/orbix_tag_parser";
 
 import { processFullResponseActions } from "../ipc/processors/response_processor";
 import {
-  removeDyadTags,
-  hasUnclosedDyadWrite,
+  removeOrbixTags,
+  hasUnclosedOrbixWrite,
 } from "../ipc/handlers/chat_stream_handlers";
 import fs from "node:fs";
 import { db } from "../db";
@@ -58,9 +58,9 @@ vi.mock("../ipc/utils/git_utils", () => ({
   getGitUncommittedFiles: vi.fn().mockResolvedValue([]),
 }));
 
-// Mock paths module to control getDyadAppPath
+// Mock paths module to control getOrbixAppPath
 vi.mock("../paths/paths", () => ({
-  getDyadAppPath: vi.fn().mockImplementation((appPath) => {
+  getOrbixAppPath: vi.fn().mockImplementation((appPath) => {
     return `/mock/user/data/path/${appPath}`;
   }),
   getUserDataPath: vi.fn().mockReturnValue("/mock/user/data/path"),
@@ -85,52 +85,52 @@ vi.mock("../db", () => ({
   },
 }));
 
-describe("getDyadAddDependencyTags", () => {
-  it("should return an empty array when no dyad-add-dependency tags are found", () => {
-    const result = getDyadAddDependencyTags("No dyad-add-dependency tags here");
+describe("getOrbixAddDependencyTags", () => {
+  it("should return an empty array when no Orbix-add-dependency tags are found", () => {
+    const result = getOrbixAddDependencyTags("No Orbix-add-dependency tags here");
     expect(result).toEqual([]);
   });
 
-  it("should return an array of dyad-add-dependency tags", () => {
-    const result = getDyadAddDependencyTags(
-      `<dyad-add-dependency packages="uuid"></dyad-add-dependency>`,
+  it("should return an array of Orbix-add-dependency tags", () => {
+    const result = getOrbixAddDependencyTags(
+      `<Orbix-add-dependency packages="uuid"></Orbix-add-dependency>`,
     );
     expect(result).toEqual(["uuid"]);
   });
 
-  it("should return all the packages in the dyad-add-dependency tags", () => {
-    const result = getDyadAddDependencyTags(
-      `<dyad-add-dependency packages="pkg1 pkg2"></dyad-add-dependency>`,
+  it("should return all the packages in the Orbix-add-dependency tags", () => {
+    const result = getOrbixAddDependencyTags(
+      `<Orbix-add-dependency packages="pkg1 pkg2"></Orbix-add-dependency>`,
     );
     expect(result).toEqual(["pkg1", "pkg2"]);
   });
 
-  it("should return all the packages in the dyad-add-dependency tags", () => {
-    const result = getDyadAddDependencyTags(
-      `txt before<dyad-add-dependency packages="pkg1 pkg2"></dyad-add-dependency>text after`,
+  it("should return all the packages in the Orbix-add-dependency tags", () => {
+    const result = getOrbixAddDependencyTags(
+      `txt before<Orbix-add-dependency packages="pkg1 pkg2"></Orbix-add-dependency>text after`,
     );
     expect(result).toEqual(["pkg1", "pkg2"]);
   });
 
-  it("should return all the packages in multiple dyad-add-dependency tags", () => {
-    const result = getDyadAddDependencyTags(
-      `txt before<dyad-add-dependency packages="pkg1 pkg2"></dyad-add-dependency>txt between<dyad-add-dependency packages="pkg3"></dyad-add-dependency>text after`,
+  it("should return all the packages in multiple Orbix-add-dependency tags", () => {
+    const result = getOrbixAddDependencyTags(
+      `txt before<Orbix-add-dependency packages="pkg1 pkg2"></Orbix-add-dependency>txt between<Orbix-add-dependency packages="pkg3"></Orbix-add-dependency>text after`,
     );
     expect(result).toEqual(["pkg1", "pkg2", "pkg3"]);
   });
 });
-describe("getDyadWriteTags", () => {
-  it("should return an empty array when no dyad-write tags are found", () => {
-    const result = getDyadWriteTags("No dyad-write tags here");
+describe("getOrbixWriteTags", () => {
+  it("should return an empty array when no Orbix-write tags are found", () => {
+    const result = getOrbixWriteTags("No Orbix-write tags here");
     expect(result).toEqual([]);
   });
 
-  it("should return a dyad-write tag", () => {
+  it("should return a Orbix-write tag", () => {
     const result =
-      getDyadWriteTags(`<dyad-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
+      getOrbixWriteTags(`<Orbix-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
 import React from "react";
 console.log("TodoItem");
-</dyad-write>`);
+</Orbix-write>`);
     expect(result).toEqual([
       {
         path: "src/components/TodoItem.tsx",
@@ -141,14 +141,14 @@ console.log("TodoItem");`,
     ]);
   });
 
-  it("should strip out code fence (if needed) from a dyad-write tag", () => {
+  it("should strip out code fence (if needed) from a Orbix-write tag", () => {
     const result =
-      getDyadWriteTags(`<dyad-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
+      getOrbixWriteTags(`<Orbix-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
 \`\`\`tsx
 import React from "react";
 console.log("TodoItem");
 \`\`\`
-</dyad-write>
+</Orbix-write>
 `);
     expect(result).toEqual([
       {
@@ -161,10 +161,10 @@ console.log("TodoItem");`,
   });
 
   it("should handle missing description", () => {
-    const result = getDyadWriteTags(`
-      <dyad-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx">
+    const result = getOrbixWriteTags(`
+      <Orbix-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx">
 import React from 'react';
-</dyad-write>
+</Orbix-write>
     `);
     expect(result).toEqual([
       {
@@ -176,11 +176,11 @@ import React from 'react';
   });
 
   it("should handle extra space", () => {
-    const result = getDyadWriteTags(
+    const result = getOrbixWriteTags(
       cleanFullResponse(`
-      <dyad-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags." >
+      <Orbix-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags." >
 import React from 'react';
-</dyad-write>
+</Orbix-write>
     `),
     );
     expect(result).toEqual([
@@ -193,12 +193,12 @@ import React from 'react';
   });
 
   it("should handle nested tags", () => {
-    const result = getDyadWriteTags(
+    const result = getOrbixWriteTags(
       cleanFullResponse(`
       BEFORE TAG
-  <dyad-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags.">
+  <Orbix-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags.">
 import React from 'react';
-</dyad-write>
+</Orbix-write>
 AFTER TAG
     `),
     );
@@ -215,15 +215,15 @@ AFTER TAG
     // Simulate the preprocessing step that cleanFullResponse would do
     const inputWithNestedTags = `
       BEFORE TAG
-  <dyad-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags.">
+  <Orbix-write path="src/pages/locations/neighborhoods/louisville/Highlands.tsx" description="Updating Highlands neighborhood page to use <a> tags.">
 import React from 'react';
-</dyad-write>
+</Orbix-write>
 AFTER TAG
     `;
 
     const cleanedInput = cleanFullResponse(inputWithNestedTags);
 
-    const result = getDyadWriteTags(cleanedInput);
+    const result = getOrbixWriteTags(cleanedInput);
     expect(result).toEqual([
       {
         path: "src/pages/locations/neighborhoods/louisville/Highlands.tsx",
@@ -234,11 +234,11 @@ AFTER TAG
   });
 
   it("should handle multiple nested tags after preprocessing", () => {
-    const inputWithMultipleNestedTags = `<dyad-write path="src/file.tsx" description="Testing <div> and <span> and <a> tags.">content</dyad-write>`;
+    const inputWithMultipleNestedTags = `<Orbix-write path="src/file.tsx" description="Testing <div> and <span> and <a> tags.">content</Orbix-write>`;
 
     // This simulates what cleanFullResponse should do
     const cleanedInput = cleanFullResponse(inputWithMultipleNestedTags);
-    const result = getDyadWriteTags(cleanedInput);
+    const result = getOrbixWriteTags(cleanedInput);
     expect(result).toEqual([
       {
         path: "src/file.tsx",
@@ -249,12 +249,12 @@ AFTER TAG
   });
 
   it("should handle nested tags in multiple attributes", () => {
-    const inputWithNestedInMultipleAttrs = `<dyad-write path="src/<component>.tsx" description="Testing <div> tags.">content</dyad-write>`;
+    const inputWithNestedInMultipleAttrs = `<Orbix-write path="src/<component>.tsx" description="Testing <div> tags.">content</Orbix-write>`;
 
     // This simulates what cleanFullResponse should do
     const cleanedInput = cleanFullResponse(inputWithNestedInMultipleAttrs);
 
-    const result = getDyadWriteTags(cleanedInput);
+    const result = getOrbixWriteTags(cleanedInput);
     expect(result).toEqual([
       {
         path: "src/＜component＞.tsx",
@@ -264,22 +264,22 @@ AFTER TAG
     ]);
   });
 
-  it("should return an array of dyad-write tags", () => {
-    const result = getDyadWriteTags(
+  it("should return an array of Orbix-write tags", () => {
+    const result = getOrbixWriteTags(
       `I'll create a simple todo list app using React, TypeScript, and shadcn/ui components. Let's get started!
 
 First, I'll create the necessary files for our todo list application:
 
-<dyad-write path="src/types/todo.ts" description="Creating types for our todo items">
+<Orbix-write path="src/types/todo.ts" description="Creating types for our todo items">
 export interface Todo {
   id: string;
   text: string;
   completed: boolean;
   createdAt: Date;
 }
-</dyad-write>
+</Orbix-write>
 
-<dyad-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
+<Orbix-write path="src/components/TodoItem.tsx" description="Creating a component for individual todo items">
 import React from "react";
 import { Trash2, Check, X } from "lucide-react";
 import { Todo } from "../types/todo";
@@ -333,9 +333,9 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
 };
 
 export default TodoItem;
-</dyad-write>
+</Orbix-write>
 
-<dyad-write path="src/components/TodoForm.tsx" description="Creating a form component for adding new todos">
+<Orbix-write path="src/components/TodoForm.tsx" description="Creating a form component for adding new todos">
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -374,9 +374,9 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo }) => {
 };
 
 export default TodoForm;
-</dyad-write>
+</Orbix-write>
 
-<dyad-write path="src/components/TodoList.tsx" description="Creating the main todo list component">
+<Orbix-write path="src/components/TodoList.tsx" description="Creating the main todo list component">
 import React from "react";
 import { Todo } from "../types/todo";
 import TodoItem from "./TodoItem";
@@ -414,9 +414,9 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onToggle, onDelete }) => {
 };
 
 export default TodoList;
-</dyad-write>
+</Orbix-write>
 
-<dyad-write path="src/components/TodoStats.tsx" description="Creating a component to show todo statistics">
+<Orbix-write path="src/components/TodoStats.tsx" description="Creating a component to show todo statistics">
 import React from "react";
 import { Todo } from "../types/todo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -480,9 +480,9 @@ const TodoStats: React.FC<TodoStatsProps> = ({ todos }) => {
 };
 
 export default TodoStats;
-</dyad-write>
+</Orbix-write>
 
-<dyad-write path="src/pages/Index.tsx" description="Creating the main page for our todo app">
+<Orbix-write path="src/pages/Index.tsx" description="Creating the main page for our todo app">
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Todo } from "../types/todo";
@@ -581,15 +581,15 @@ const Index: React.FC = () => {
 };
 
 export default Index;
-</dyad-write>
+</Orbix-write>
 
-<dyad-add-dependency packages="uuid"></dyad-add-dependency>
+<Orbix-add-dependency packages="uuid"></Orbix-add-dependency>
 
-<dyad-write path="src/types/uuid.d.ts" description="Adding type definitions for uuid">
+<Orbix-write path="src/types/uuid.d.ts" description="Adding type definitions for uuid">
 declare module 'uuid' {
   export function v4(): string;
 }
-</dyad-write>
+</Orbix-write>
 
 I've created a complete todo list application with the ability to add, complete, and delete tasks. The app includes statistics and uses local storage to persist data.`,
     );
@@ -597,16 +597,16 @@ I've created a complete todo list application with the ability to add, complete,
   });
 });
 
-describe("getDyadRenameTags", () => {
-  it("should return an empty array when no dyad-rename tags are found", () => {
-    const result = getDyadRenameTags("No dyad-rename tags here");
+describe("getOrbixRenameTags", () => {
+  it("should return an empty array when no Orbix-rename tags are found", () => {
+    const result = getOrbixRenameTags("No Orbix-rename tags here");
     expect(result).toEqual([]);
   });
 
-  it("should return an array of dyad-rename tags", () => {
-    const result = getDyadRenameTags(
-      `<dyad-rename from="src/components/UserProfile.jsx" to="src/components/ProfileCard.jsx"></dyad-rename>
-      <dyad-rename from="src/utils/helpers.js" to="src/utils/utils.js"></dyad-rename>`,
+  it("should return an array of Orbix-rename tags", () => {
+    const result = getOrbixRenameTags(
+      `<Orbix-rename from="src/components/UserProfile.jsx" to="src/components/ProfileCard.jsx"></Orbix-rename>
+      <Orbix-rename from="src/utils/helpers.js" to="src/utils/utils.js"></Orbix-rename>`,
     );
     expect(result).toEqual([
       {
@@ -618,16 +618,16 @@ describe("getDyadRenameTags", () => {
   });
 });
 
-describe("getDyadDeleteTags", () => {
-  it("should return an empty array when no dyad-delete tags are found", () => {
-    const result = getDyadDeleteTags("No dyad-delete tags here");
+describe("getOrbixDeleteTags", () => {
+  it("should return an empty array when no Orbix-delete tags are found", () => {
+    const result = getOrbixDeleteTags("No Orbix-delete tags here");
     expect(result).toEqual([]);
   });
 
-  it("should return an array of dyad-delete paths", () => {
-    const result = getDyadDeleteTags(
-      `<dyad-delete path="src/components/Analytics.jsx"></dyad-delete>
-      <dyad-delete path="src/utils/unused.js"></dyad-delete>`,
+  it("should return an array of Orbix-delete paths", () => {
+    const result = getOrbixDeleteTags(
+      `<Orbix-delete path="src/components/Analytics.jsx"></Orbix-delete>
+      <Orbix-delete path="src/utils/unused.js"></Orbix-delete>`,
     );
     expect(result).toEqual([
       "src/components/Analytics.jsx",
@@ -670,9 +670,9 @@ describe("processFullResponse", () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
   });
 
-  it("should return empty object when no dyad-write tags are found", async () => {
+  it("should return empty object when no Orbix-write tags are found", async () => {
     const result = await processFullResponseActions(
-      "No dyad-write tags here",
+      "No Orbix-write tags here",
       1,
       {
         chatSummary: undefined,
@@ -688,12 +688,12 @@ describe("processFullResponse", () => {
     expect(fs.writeFileSync).not.toHaveBeenCalled();
   });
 
-  it("should process dyad-write tags and create files", async () => {
+  it("should process Orbix-write tags and create files", async () => {
     // Set up fs mocks to succeed
     vi.mocked(fs.mkdirSync).mockImplementation(() => undefined);
     vi.mocked(fs.writeFileSync).mockImplementation(() => undefined);
 
-    const response = `<dyad-write path="src/file1.js">console.log('Hello');</dyad-write>`;
+    const response = `<Orbix-write path="src/file1.js">console.log('Hello');</Orbix-write>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -723,7 +723,7 @@ describe("processFullResponse", () => {
       throw new Error("Mock filesystem error");
     });
 
-    const response = `<dyad-write path="src/error-file.js">This will fail</dyad-write>`;
+    const response = `<Orbix-write path="src/error-file.js">This will fail</Orbix-write>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -734,7 +734,7 @@ describe("processFullResponse", () => {
     expect(result.error).toContain("Mock filesystem error");
   });
 
-  it("should process multiple dyad-write tags and commit all files", async () => {
+  it("should process multiple Orbix-write tags and commit all files", async () => {
     // Clear previous mock calls
     vi.clearAllMocks();
 
@@ -743,12 +743,12 @@ describe("processFullResponse", () => {
     vi.mocked(fs.writeFileSync).mockImplementation(() => undefined);
 
     const response = `
-    <dyad-write path="src/file1.js">console.log('First file');</dyad-write>
-    <dyad-write path="src/utils/file2.js">export const add = (a, b) => a + b;</dyad-write>
-    <dyad-write path="src/components/Button.tsx">
+    <Orbix-write path="src/file1.js">console.log('First file');</Orbix-write>
+    <Orbix-write path="src/utils/file2.js">export const add = (a, b) => a + b;</Orbix-write>
+    <Orbix-write path="src/components/Button.tsx">
     import React from 'react';
     export const Button = ({ children }) => <button>{children}</button>;
-    </dyad-write>
+    </Orbix-write>
     `;
 
     const result = await processFullResponseActions(response, 1, {
@@ -809,13 +809,13 @@ describe("processFullResponse", () => {
     expect(result).toEqual({ updatedFiles: true });
   });
 
-  it("should process dyad-rename tags and rename files", async () => {
+  it("should process Orbix-rename tags and rename files", async () => {
     // Set up fs mocks to succeed
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.mkdirSync).mockImplementation(() => undefined);
     vi.mocked(fs.renameSync).mockImplementation(() => undefined);
 
-    const response = `<dyad-rename from="src/components/OldComponent.jsx" to="src/components/NewComponent.jsx"></dyad-rename>`;
+    const response = `<Orbix-rename from="src/components/OldComponent.jsx" to="src/components/NewComponent.jsx"></Orbix-rename>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -848,7 +848,7 @@ describe("processFullResponse", () => {
     // Set up the mock to return false for existsSync
     vi.mocked(fs.existsSync).mockReturnValue(false);
 
-    const response = `<dyad-rename from="src/components/NonExistent.jsx" to="src/components/NewFile.jsx"></dyad-rename>`;
+    const response = `<Orbix-rename from="src/components/NonExistent.jsx" to="src/components/NewFile.jsx"></Orbix-rename>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -865,12 +865,12 @@ describe("processFullResponse", () => {
     });
   });
 
-  it("should process dyad-delete tags and delete files", async () => {
+  it("should process Orbix-delete tags and delete files", async () => {
     // Set up fs mocks to succeed
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.unlinkSync).mockImplementation(() => undefined);
 
-    const response = `<dyad-delete path="src/components/Unused.jsx"></dyad-delete>`;
+    const response = `<Orbix-delete path="src/components/Unused.jsx"></Orbix-delete>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -893,7 +893,7 @@ describe("processFullResponse", () => {
     // Set up the mock to return false for existsSync
     vi.mocked(fs.existsSync).mockReturnValue(false);
 
-    const response = `<dyad-delete path="src/components/NonExistent.jsx"></dyad-delete>`;
+    const response = `<Orbix-delete path="src/components/NonExistent.jsx"></Orbix-delete>`;
 
     const result = await processFullResponseActions(response, 1, {
       chatSummary: undefined,
@@ -919,9 +919,9 @@ describe("processFullResponse", () => {
     vi.mocked(fs.unlinkSync).mockImplementation(() => undefined);
 
     const response = `
-    <dyad-write path="src/components/NewComponent.jsx">import React from 'react'; export default () => <div>New</div>;</dyad-write>
-    <dyad-rename from="src/components/OldComponent.jsx" to="src/components/RenamedComponent.jsx"></dyad-rename>
-    <dyad-delete path="src/components/Unused.jsx"></dyad-delete>
+    <Orbix-write path="src/components/NewComponent.jsx">import React from 'react'; export default () => <div>New</div>;</Orbix-write>
+    <Orbix-rename from="src/components/OldComponent.jsx" to="src/components/RenamedComponent.jsx"></Orbix-rename>
+    <Orbix-delete path="src/components/Unused.jsx"></Orbix-delete>
     `;
 
     const result = await processFullResponseActions(response, 1, {
@@ -963,45 +963,45 @@ describe("processFullResponse", () => {
   });
 });
 
-describe("removeDyadTags", () => {
+describe("removeOrbixTags", () => {
   it("should return empty string when input is empty", () => {
-    const result = removeDyadTags("");
+    const result = removeOrbixTags("");
     expect(result).toBe("");
   });
 
-  it("should return the same text when no dyad tags are present", () => {
-    const text = "This is a regular text without any dyad tags.";
-    const result = removeDyadTags(text);
+  it("should return the same text when no Orbix tags are present", () => {
+    const text = "This is a regular text without any Orbix tags.";
+    const result = removeOrbixTags(text);
     expect(result).toBe(text);
   });
 
-  it("should remove a single dyad-write tag", () => {
-    const text = `Before text <dyad-write path="src/file.js">console.log('hello');</dyad-write> After text`;
-    const result = removeDyadTags(text);
+  it("should remove a single Orbix-write tag", () => {
+    const text = `Before text <Orbix-write path="src/file.js">console.log('hello');</Orbix-write> After text`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Before text  After text");
   });
 
-  it("should remove a single dyad-delete tag", () => {
-    const text = `Before text <dyad-delete path="src/file.js"></dyad-delete> After text`;
-    const result = removeDyadTags(text);
+  it("should remove a single Orbix-delete tag", () => {
+    const text = `Before text <Orbix-delete path="src/file.js"></Orbix-delete> After text`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Before text  After text");
   });
 
-  it("should remove a single dyad-rename tag", () => {
-    const text = `Before text <dyad-rename from="old.js" to="new.js"></dyad-rename> After text`;
-    const result = removeDyadTags(text);
+  it("should remove a single Orbix-rename tag", () => {
+    const text = `Before text <Orbix-rename from="old.js" to="new.js"></Orbix-rename> After text`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Before text  After text");
   });
 
-  it("should remove multiple different dyad tags", () => {
-    const text = `Start <dyad-write path="file1.js">code here</dyad-write> middle <dyad-delete path="file2.js"></dyad-delete> end <dyad-rename from="old.js" to="new.js"></dyad-rename> finish`;
-    const result = removeDyadTags(text);
+  it("should remove multiple different Orbix tags", () => {
+    const text = `Start <Orbix-write path="file1.js">code here</Orbix-write> middle <Orbix-delete path="file2.js"></Orbix-delete> end <Orbix-rename from="old.js" to="new.js"></Orbix-rename> finish`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Start  middle  end  finish");
   });
 
-  it("should remove dyad tags with multiline content", () => {
+  it("should remove Orbix tags with multiline content", () => {
     const text = `Before
-<dyad-write path="src/component.tsx" description="A React component">
+<Orbix-write path="src/component.tsx" description="A React component">
 import React from 'react';
 
 const Component = () => {
@@ -1009,124 +1009,124 @@ const Component = () => {
 };
 
 export default Component;
-</dyad-write>
+</Orbix-write>
 After`;
-    const result = removeDyadTags(text);
+    const result = removeOrbixTags(text);
     expect(result).toBe("Before\n\nAfter");
   });
 
-  it("should handle dyad tags with complex attributes", () => {
-    const text = `Text <dyad-write path="src/file.js" description="Complex component with quotes" version="1.0">const x = "hello world";</dyad-write> more text`;
-    const result = removeDyadTags(text);
+  it("should handle Orbix tags with complex attributes", () => {
+    const text = `Text <Orbix-write path="src/file.js" description="Complex component with quotes" version="1.0">const x = "hello world";</Orbix-write> more text`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Text  more text");
   });
 
-  it("should remove dyad tags and trim whitespace", () => {
-    const text = `  <dyad-write path="file.js">code</dyad-write>  `;
-    const result = removeDyadTags(text);
+  it("should remove Orbix tags and trim whitespace", () => {
+    const text = `  <Orbix-write path="file.js">code</Orbix-write>  `;
+    const result = removeOrbixTags(text);
     expect(result).toBe("");
   });
 
   it("should handle nested content that looks like tags", () => {
-    const text = `<dyad-write path="file.js">
+    const text = `<Orbix-write path="file.js">
 const html = '<div>Hello</div>';
 const component = <Component />;
-</dyad-write>`;
-    const result = removeDyadTags(text);
+</Orbix-write>`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("");
   });
 
-  it("should handle self-closing dyad tags", () => {
-    const text = `Before <dyad-delete path="file.js" /> After`;
-    const result = removeDyadTags(text);
-    expect(result).toBe('Before <dyad-delete path="file.js" /> After');
+  it("should handle self-closing Orbix tags", () => {
+    const text = `Before <Orbix-delete path="file.js" /> After`;
+    const result = removeOrbixTags(text);
+    expect(result).toBe('Before <Orbix-delete path="file.js" /> After');
   });
 
-  it("should handle malformed dyad tags gracefully", () => {
-    const text = `Before <dyad-write path="file.js">unclosed tag After`;
-    const result = removeDyadTags(text);
-    expect(result).toBe('Before <dyad-write path="file.js">unclosed tag After');
+  it("should handle malformed Orbix tags gracefully", () => {
+    const text = `Before <Orbix-write path="file.js">unclosed tag After`;
+    const result = removeOrbixTags(text);
+    expect(result).toBe('Before <Orbix-write path="file.js">unclosed tag After');
   });
 
-  it("should handle dyad tags with special characters in content", () => {
-    const text = `<dyad-write path="file.js">
+  it("should handle Orbix tags with special characters in content", () => {
+    const text = `<Orbix-write path="file.js">
 const regex = /<div[^>]*>.*?</div>/g;
 const special = "Special chars: @#$%^&*()[]{}|\\";
-</dyad-write>`;
-    const result = removeDyadTags(text);
+</Orbix-write>`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("");
   });
 
-  it("should handle multiple dyad tags of the same type", () => {
-    const text = `<dyad-write path="file1.js">code1</dyad-write> between <dyad-write path="file2.js">code2</dyad-write>`;
-    const result = removeDyadTags(text);
+  it("should handle multiple Orbix tags of the same type", () => {
+    const text = `<Orbix-write path="file1.js">code1</Orbix-write> between <Orbix-write path="file2.js">code2</Orbix-write>`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("between");
   });
 
-  it("should handle dyad tags with custom tag names", () => {
-    const text = `Before <dyad-custom-action param="value">content</dyad-custom-action> After`;
-    const result = removeDyadTags(text);
+  it("should handle Orbix tags with custom tag names", () => {
+    const text = `Before <Orbix-custom-action param="value">content</Orbix-custom-action> After`;
+    const result = removeOrbixTags(text);
     expect(result).toBe("Before  After");
   });
 });
 
-describe("hasUnclosedDyadWrite", () => {
-  it("should return false when there are no dyad-write tags", () => {
-    const text = "This is just regular text without any dyad tags.";
-    const result = hasUnclosedDyadWrite(text);
+describe("hasUnclosedOrbixWrite", () => {
+  it("should return false when there are no Orbix-write tags", () => {
+    const text = "This is just regular text without any Orbix tags.";
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should return false when dyad-write tag is properly closed", () => {
-    const text = `<dyad-write path="src/file.js">console.log('hello');</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should return false when Orbix-write tag is properly closed", () => {
+    const text = `<Orbix-write path="src/file.js">console.log('hello');</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should return true when dyad-write tag is not closed", () => {
-    const text = `<dyad-write path="src/file.js">console.log('hello');`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should return true when Orbix-write tag is not closed", () => {
+    const text = `<Orbix-write path="src/file.js">console.log('hello');`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
-  it("should return false when dyad-write tag with attributes is properly closed", () => {
-    const text = `<dyad-write path="src/file.js" description="A test file">console.log('hello');</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should return false when Orbix-write tag with attributes is properly closed", () => {
+    const text = `<Orbix-write path="src/file.js" description="A test file">console.log('hello');</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should return true when dyad-write tag with attributes is not closed", () => {
-    const text = `<dyad-write path="src/file.js" description="A test file">console.log('hello');`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should return true when Orbix-write tag with attributes is not closed", () => {
+    const text = `<Orbix-write path="src/file.js" description="A test file">console.log('hello');`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
-  it("should return false when there are multiple closed dyad-write tags", () => {
-    const text = `<dyad-write path="src/file1.js">code1</dyad-write>
+  it("should return false when there are multiple closed Orbix-write tags", () => {
+    const text = `<Orbix-write path="src/file1.js">code1</Orbix-write>
     Some text in between
-    <dyad-write path="src/file2.js">code2</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+    <Orbix-write path="src/file2.js">code2</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should return true when the last dyad-write tag is unclosed", () => {
-    const text = `<dyad-write path="src/file1.js">code1</dyad-write>
+  it("should return true when the last Orbix-write tag is unclosed", () => {
+    const text = `<Orbix-write path="src/file1.js">code1</Orbix-write>
     Some text in between
-    <dyad-write path="src/file2.js">code2`;
-    const result = hasUnclosedDyadWrite(text);
+    <Orbix-write path="src/file2.js">code2`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
   it("should return false when first tag is unclosed but last tag is closed", () => {
-    const text = `<dyad-write path="src/file1.js">code1
+    const text = `<Orbix-write path="src/file1.js">code1
     Some text in between
-    <dyad-write path="src/file2.js">code2</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+    <Orbix-write path="src/file2.js">code2</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
   it("should handle multiline content correctly", () => {
-    const text = `<dyad-write path="src/component.tsx" description="React component">
+    const text = `<Orbix-write path="src/component.tsx" description="React component">
 import React from 'react';
 
 const Component = () => {
@@ -1138,13 +1138,13 @@ const Component = () => {
 };
 
 export default Component;
-</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
   it("should handle multiline unclosed content correctly", () => {
-    const text = `<dyad-write path="src/component.tsx" description="React component">
+    const text = `<Orbix-write path="src/component.tsx" description="React component">
 import React from 'react';
 
 const Component = () => {
@@ -1156,58 +1156,58 @@ const Component = () => {
 };
 
 export default Component;`;
-    const result = hasUnclosedDyadWrite(text);
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
   it("should handle complex attributes correctly", () => {
-    const text = `<dyad-write path="src/file.js" description="File with quotes and special chars" version="1.0" author="test">
+    const text = `<Orbix-write path="src/file.js" description="File with quotes and special chars" version="1.0" author="test">
 const message = "Hello 'world'";
 const regex = /<div[^>]*>/g;
-</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should handle text before and after dyad-write tags", () => {
+  it("should handle text before and after Orbix-write tags", () => {
     const text = `Some text before the tag
-<dyad-write path="src/file.js">console.log('hello');</dyad-write>
+<Orbix-write path="src/file.js">console.log('hello');</Orbix-write>
 Some text after the tag`;
-    const result = hasUnclosedDyadWrite(text);
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
   it("should handle unclosed tag with text after", () => {
     const text = `Some text before the tag
-<dyad-write path="src/file.js">console.log('hello');
+<Orbix-write path="src/file.js">console.log('hello');
 Some text after the unclosed tag`;
-    const result = hasUnclosedDyadWrite(text);
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
-  it("should handle empty dyad-write tags", () => {
-    const text = `<dyad-write path="src/file.js"></dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should handle empty Orbix-write tags", () => {
+    const text = `<Orbix-write path="src/file.js"></Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
-  it("should handle unclosed empty dyad-write tags", () => {
-    const text = `<dyad-write path="src/file.js">`;
-    const result = hasUnclosedDyadWrite(text);
+  it("should handle unclosed empty Orbix-write tags", () => {
+    const text = `<Orbix-write path="src/file.js">`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(true);
   });
 
   it("should focus on the last opening tag when there are mixed states", () => {
-    const text = `<dyad-write path="src/file1.js">completed content</dyad-write>
-    <dyad-write path="src/file2.js">unclosed content
-    <dyad-write path="src/file3.js">final content</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+    const text = `<Orbix-write path="src/file1.js">completed content</Orbix-write>
+    <Orbix-write path="src/file2.js">unclosed content
+    <Orbix-write path="src/file3.js">final content</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 
   it("should handle tags with special characters in attributes", () => {
-    const text = `<dyad-write path="src/file-name_with.special@chars.js" description="File with special chars in path">content</dyad-write>`;
-    const result = hasUnclosedDyadWrite(text);
+    const text = `<Orbix-write path="src/file-name_with.special@chars.js" description="File with special chars in path">content</Orbix-write>`;
+    const result = hasUnclosedOrbixWrite(text);
     expect(result).toBe(false);
   });
 });

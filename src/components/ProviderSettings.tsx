@@ -110,7 +110,10 @@ export function ProviderSettingsGrid() {
       <h2 className="text-lg font-medium mb-6">AI Providers</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {providers
-          ?.filter((p) => p.type !== "local")
+          ?.filter(
+            (p) =>
+              p.type !== "local" && (p.id === "google" || p.id === "openrouter"),
+          )
           .map((provider: LanguageModelProvider) => {
             const isCustom = provider.type === "custom";
 
@@ -182,6 +185,8 @@ export function ProviderSettingsGrid() {
               </Card>
             );
           })}
+
+
 
         {/* Add custom provider button */}
         <Card

@@ -143,8 +143,8 @@ export const customDark: editor.IStandaloneThemeData = {
 };
 
 loader.init().then((monaco) => {
-  monaco.editor.defineTheme("dyad-light", customLight);
-  monaco.editor.defineTheme("dyad-dark", customDark);
+  monaco.editor.defineTheme("Orbix-light", customLight);
+  monaco.editor.defineTheme("Orbix-dark", customDark);
 
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     jsx: monaco.languages.typescript.JsxEmit.React, // Enable JSX

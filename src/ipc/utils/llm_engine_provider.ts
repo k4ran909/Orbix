@@ -13,7 +13,7 @@ import { LanguageModelV2 } from "@ai-sdk/provider";
 const logger = log.scope("llm_engine_provider");
 
 export type ExampleChatModelId = string & {};
-export interface ExampleChatSettings {}
+export interface ExampleChatSettings { }
 export interface ExampleProviderSettings {
   /**
 Example API key.
@@ -38,7 +38,7 @@ or to provide a custom fetch implementation for e.g. testing.
   fetch?: FetchFunction;
 
   originalProviderId: string;
-  dyadOptions: {
+  OrbixOptions: {
     enableLazyEdits?: boolean;
     enableSmartFilesContext?: boolean;
     enableWebSearch?: boolean;
@@ -46,7 +46,7 @@ or to provide a custom fetch implementation for e.g. testing.
   settings: UserSettings;
 }
 
-export interface DyadEngineProvider {
+export interface OrbixEngineProvider {
   /**
 Creates a model for text generation.
 */
@@ -64,11 +64,11 @@ Creates a chat model for text generation.
   ): LanguageModelV2;
 }
 
-export function createDyadEngine(
+export function createOrbixEngine(
   options: ExampleProviderSettings,
-): DyadEngineProvider {
+): OrbixEngineProvider {
   const baseURL = withoutTrailingSlash(options.baseURL);
-  logger.info("creating dyad engine with baseURL", baseURL);
+  logger.info("creating Orbix engine with baseURL", baseURL);
 
   // Track request ID attempts
   const requestIdAttempts = new Map<string, number>();
@@ -76,7 +76,7 @@ export function createDyadEngine(
   const getHeaders = () => ({
     Authorization: `Bearer ${loadApiKey({
       apiKey: options.apiKey,
-      environmentVariableName: "DYAD_PRO_API_KEY",
+      environmentVariableName: "Orbix_PRO_API_KEY",
       description: "Example API key",
     })}`,
     ...options.headers,
@@ -90,7 +90,7 @@ export function createDyadEngine(
   }
 
   const getCommonModelConfig = (): CommonModelConfig => ({
-    provider: `dyad-engine`,
+    provider: `Orbix-engine`,
     url: ({ path }) => {
       const url = new URL(`${baseURL}${path}`);
       if (options.queryParams) {
@@ -124,33 +124,33 @@ export function createDyadEngine(
               options.settings,
             ),
           };
-          const dyadVersionedFiles = parsedBody.dyadVersionedFiles;
-          if ("dyadVersionedFiles" in parsedBody) {
-            delete parsedBody.dyadVersionedFiles;
+          const orbixVersionedFiles = parsedBody.orbixVersionedFiles;
+          if ("orbixVersionedFiles" in parsedBody) {
+            delete parsedBody.orbixVersionedFiles;
           }
-          const dyadFiles = parsedBody.dyadFiles;
-          if ("dyadFiles" in parsedBody) {
-            delete parsedBody.dyadFiles;
+          const OrbixFiles = parsedBody.OrbixFiles;
+          if ("OrbixFiles" in parsedBody) {
+            delete parsedBody.OrbixFiles;
           }
-          const requestId = parsedBody.dyadRequestId;
-          if ("dyadRequestId" in parsedBody) {
-            delete parsedBody.dyadRequestId;
+          const requestId = parsedBody.OrbixRequestId;
+          if ("OrbixRequestId" in parsedBody) {
+            delete parsedBody.OrbixRequestId;
           }
-          const dyadAppId = parsedBody.dyadAppId;
-          if ("dyadAppId" in parsedBody) {
-            delete parsedBody.dyadAppId;
+          const OrbixAppId = parsedBody.OrbixAppId;
+          if ("OrbixAppId" in parsedBody) {
+            delete parsedBody.OrbixAppId;
           }
-          const dyadDisableFiles = parsedBody.dyadDisableFiles;
-          if ("dyadDisableFiles" in parsedBody) {
-            delete parsedBody.dyadDisableFiles;
+          const OrbixDisableFiles = parsedBody.OrbixDisableFiles;
+          if ("OrbixDisableFiles" in parsedBody) {
+            delete parsedBody.OrbixDisableFiles;
           }
-          const dyadMentionedApps = parsedBody.dyadMentionedApps;
-          if ("dyadMentionedApps" in parsedBody) {
-            delete parsedBody.dyadMentionedApps;
+          const OrbixMentionedApps = parsedBody.OrbixMentionedApps;
+          if ("OrbixMentionedApps" in parsedBody) {
+            delete parsedBody.OrbixMentionedApps;
           }
-          const dyadSmartContextMode = parsedBody.dyadSmartContextMode;
-          if ("dyadSmartContextMode" in parsedBody) {
-            delete parsedBody.dyadSmartContextMode;
+          const OrbixSmartContextMode = parsedBody.OrbixSmartContextMode;
+          if ("OrbixSmartContextMode" in parsedBody) {
+            delete parsedBody.OrbixSmartContextMode;
           }
 
           // Track and modify requestId with attempt number
@@ -162,19 +162,19 @@ export function createDyadEngine(
           }
 
           // Add files to the request if they exist
-          if (!dyadDisableFiles) {
-            parsedBody.dyad_options = {
-              files: dyadFiles,
-              versioned_files: dyadVersionedFiles,
-              enable_lazy_edits: options.dyadOptions.enableLazyEdits,
+          if (!OrbixDisableFiles) {
+            parsedBody.Orbix_options = {
+              files: OrbixFiles,
+              versioned_files: orbixVersionedFiles,
+              enable_lazy_edits: options.OrbixOptions.enableLazyEdits,
               enable_smart_files_context:
-                options.dyadOptions.enableSmartFilesContext,
-              smart_context_mode: dyadSmartContextMode,
-              enable_web_search: options.dyadOptions.enableWebSearch,
-              app_id: dyadAppId,
+                options.OrbixOptions.enableSmartFilesContext,
+              smart_context_mode: OrbixSmartContextMode,
+              enable_web_search: options.OrbixOptions.enableWebSearch,
+              app_id: OrbixAppId,
             };
-            if (dyadMentionedApps?.length) {
-              parsedBody.dyad_options.mentioned_apps = dyadMentionedApps;
+            if (OrbixMentionedApps?.length) {
+              parsedBody.Orbix_options.mentioned_apps = OrbixMentionedApps;
             }
           }
 
@@ -184,7 +184,7 @@ export function createDyadEngine(
             headers: {
               ...init.headers,
               ...(modifiedRequestId && {
-                "X-Dyad-Request-Id": modifiedRequestId,
+                "X-Orbix-Request-Id": modifiedRequestId,
               }),
             },
             body: JSON.stringify(parsedBody),

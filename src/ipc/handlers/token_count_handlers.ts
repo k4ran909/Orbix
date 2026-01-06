@@ -9,7 +9,7 @@ import {
   SUPABASE_AVAILABLE_SYSTEM_PROMPT,
   SUPABASE_NOT_AVAILABLE_SYSTEM_PROMPT,
 } from "../../prompts/supabase_prompt";
-import { getDyadAppPath } from "../../paths/paths";
+import { getOrbixAppPath } from "../../paths/paths";
 import log from "electron-log";
 import { extractCodebase } from "../../utils/codebase";
 import { getSupabaseContext } from "../../supabase_admin/supabase_context";
@@ -62,10 +62,10 @@ export function registerTokenCountHandlers() {
 
       // Count system prompt tokens
       let systemPrompt = constructSystemPrompt({
-        aiRules: await readAiRules(getDyadAppPath(chat.app.path)),
+        aiRules: await readAiRules(getOrbixAppPath(chat.app.path)),
         chatMode:
           settings.selectedChatMode === "agent" ||
-          settings.selectedChatMode === "local-agent"
+            settings.selectedChatMode === "local-agent"
             ? "build"
             : settings.selectedChatMode,
         enableTurboEditsV2: isTurboEditsV2Enabled(settings),
@@ -92,18 +92,18 @@ export function registerTokenCountHandlers() {
       let codebaseTokens = 0;
 
       if (chat.app) {
-        const appPath = getDyadAppPath(chat.app.path);
+        const appPath = getOrbixAppPath(chat.app.path);
         const { formattedOutput, files } = await extractCodebase({
           appPath,
           chatContext: validateChatContext(chat.app.chatContext),
         });
         codebaseInfo = formattedOutput;
-        if (settings.enableDyadPro && settings.enableProSmartFilesContextMode) {
+        if (settings.enableOrbixPro && settings.enableProSmartFilesContextMode) {
           codebaseTokens = estimateTokens(
             files
               // It doesn't need to be the exact format but it's just to get a token estimate
               .map(
-                (file) => `<dyad-file=${file.path}>${file.content}</dyad-file>`,
+                (file) => `<Orbix-file=${file.path}>${file.content}</Orbix-file>`,
               )
               .join("\n\n"),
           );

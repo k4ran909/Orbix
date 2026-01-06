@@ -312,8 +312,8 @@ export class IpcClient {
     return IpcClient.instance;
   }
 
-  public async restartDyad(): Promise<void> {
-    await this.ipcRenderer.invoke("restart-dyad");
+  public async restartOrbix(): Promise<void> {
+    await this.ipcRenderer.invoke("restart-Orbix");
   }
 
   public async reloadEnvPath(): Promise<void> {
@@ -1462,7 +1462,7 @@ export class IpcClient {
   }
 
   public cancelHelpChat(sessionId: string): void {
-    this.ipcRenderer.invoke("help:chat:cancel", sessionId).catch(() => {});
+    this.ipcRenderer.invoke("help:chat:cancel", sessionId).catch(() => { });
   }
 
   // --- Visual Editing ---

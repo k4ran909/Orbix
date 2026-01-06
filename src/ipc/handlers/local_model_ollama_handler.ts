@@ -88,11 +88,13 @@ export async function fetchOllamaModels(): Promise<LocalModelListResponse> {
       error instanceof TypeError &&
       (error as Error).message.includes("fetch failed")
     ) {
-      throw new Error(
+      logger.info(
         "Could not connect to Ollama. Make sure it's running at http://localhost:11434",
       );
+      return { models: [] };
     }
-    throw new Error("Failed to fetch models from Ollama");
+    logger.error("Failed to fetch models from Ollama", error);
+    return { models: [] };
   }
 }
 

@@ -3,7 +3,7 @@ import { LanguageModel } from "../ipc_types";
 export const PROVIDERS_THAT_SUPPORT_THINKING: (keyof typeof MODEL_OPTIONS)[] = [
   "google",
   "vertex",
-  "auto",
+
 ];
 
 export interface ModelOption {
@@ -19,143 +19,8 @@ export interface ModelOption {
 }
 
 export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
-  openai: [
-    // https://platform.openai.com/docs/models/gpt-5.1
-    {
-      name: "gpt-5.2",
-      displayName: "GPT 5.2",
-      description: "OpenAI's latest model",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 3,
-    },
-    // https://platform.openai.com/docs/models/gpt-5.1
-    {
-      name: "gpt-5.1",
-      displayName: "GPT 5.1",
-      description:
-        "OpenAI's flagship model- smarter, faster, and more conversational",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 3,
-    },
-    // https://platform.openai.com/docs/models/gpt-5.1-codex
-    {
-      name: "gpt-5.1-codex",
-      displayName: "GPT 5.1 Codex",
-      description: "OpenAI's advanced coding workflows",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 3,
-    },
-    // https://platform.openai.com/docs/models/gpt-5.1-codex-mini
-    {
-      name: "gpt-5.1-codex-mini",
-      displayName: "GPT 5.1 Codex Mini",
-      description: "OpenAI's compact and efficient coding model",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 2,
-    },
 
-    // https://platform.openai.com/docs/models/gpt-5
-    {
-      name: "gpt-5",
-      displayName: "GPT 5",
-      description: "OpenAI's flagship model",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 3,
-    },
-    // https://platform.openai.com/docs/models/gpt-5-codex
-    {
-      name: "gpt-5-codex",
-      displayName: "GPT 5 Codex",
-      description: "OpenAI's flagship model optimized for coding",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 3,
-    },
-    // https://platform.openai.com/docs/models/gpt-5-mini
-    {
-      name: "gpt-5-mini",
-      displayName: "GPT 5 Mini",
-      description: "OpenAI's lightweight, but intelligent model",
-      // Technically it's 128k but OpenAI errors if you set max_tokens instead of max_completion_tokens
-      maxOutputTokens: undefined,
-      contextWindow: 400_000,
-      // Requires temperature to be default value (1)
-      temperature: 1,
-      dollarSigns: 2,
-    },
-  ],
-  // https://docs.anthropic.com/en/docs/about-claude/models/all-models#model-comparison-table
-  anthropic: [
-    {
-      name: "claude-opus-4-5",
-      displayName: "Claude Opus 4.5",
-      description:
-        "Anthropic's best model for coding (note: this model is very expensive!)",
-      // Set to 32k since context window is 1M tokens
-      maxOutputTokens: 32_000,
-      contextWindow: 200_000,
-      temperature: 0,
-      dollarSigns: 5,
-    },
-    {
-      name: "claude-sonnet-4-5-20250929",
-      displayName: "Claude Sonnet 4.5",
-      description:
-        "Anthropic's best model for coding (note: >200k tokens is very expensive!)",
-      // Set to 32k since context window is 1M tokens
-      maxOutputTokens: 32_000,
-      contextWindow: 1_000_000,
-      temperature: 0,
-      dollarSigns: 5,
-    },
-    {
-      name: "claude-sonnet-4-20250514",
-      displayName: "Claude Sonnet 4",
-      description: "Excellent coder (note: >200k tokens is very expensive!)",
-      // Set to 32k since context window is 1M tokens
-      maxOutputTokens: 32_000,
-      contextWindow: 1_000_000,
-      temperature: 0,
-      dollarSigns: 5,
-    },
-  ],
   google: [
-    // https://ai.google.dev/gemini-api/docs/models#gemini-3-pro
-    {
-      name: "gemini-3-pro-preview",
-      displayName: "Gemini 3 Pro (Preview)",
-      description: "Google's latest Gemini model",
-      // See Flash 2.5 comment below (go 1 below just to be safe, even though it seems OK now).
-      maxOutputTokens: 65_536 - 1,
-      // Gemini context window = input token + output token
-      contextWindow: 1_048_576,
-      // Recommended by Google: https://ai.google.dev/gemini-api/docs/gemini-3?thinking=high#temperature
-      temperature: 1.0,
-      dollarSigns: 4,
-    },
     // https://ai.google.dev/gemini-api/docs/models#gemini-3-pro
     {
       name: "gemini-3-flash-preview",
@@ -271,124 +136,6 @@ export const MODEL_OPTIONS: Record<string, ModelOption[]> = {
       dollarSigns: 2,
     },
   ],
-  auto: [
-    {
-      name: "auto",
-      displayName: "Auto",
-      description: "Automatically selects the best model",
-      tag: "Default",
-      // The following is reasonable defaults.
-      maxOutputTokens: 32_000,
-      contextWindow: 200_000,
-      temperature: 0,
-    },
-    {
-      name: "free",
-      displayName: "Free (OpenRouter)",
-      description: "Selects from one of the free OpenRouter models",
-      tag: "Free",
-      // These are below Gemini 2.5 Pro & Flash limits
-      // which are the ones defaulted to for both regular auto
-      // and smart auto.
-      maxOutputTokens: 32_000,
-      contextWindow: 128_000,
-      temperature: 0,
-    },
-    {
-      name: "turbo",
-      displayName: "Turbo (Pro)",
-      description: "Use very fast open-source frontier models",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      tag: "Fast",
-      tagColor: "bg-rose-800 text-white",
-    },
-    {
-      name: "value",
-      displayName: "Super Value (Pro)",
-      description: "Uses the most cost-effective models available",
-      maxOutputTokens: 32_000,
-      contextWindow: 256_000,
-      temperature: 0,
-      tag: "Budget",
-      tagColor: "bg-emerald-700 text-white",
-    },
-  ],
-  azure: [
-    {
-      name: "gpt-5.1",
-      displayName: "GPT-5.1",
-      description: "Azure OpenAI GPT-5.1 model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5.1-codex",
-      displayName: "GPT-5.1 Codex",
-      description: "Azure OpenAI GPT-5.1 Codex model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5.1-codex-mini",
-      displayName: "GPT-5.1 Codex Mini",
-      description: "Azure OpenAI GPT-5.1 Codex Mini model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-codex",
-      displayName: "GPT-5 Codex",
-      description: "Azure OpenAI GPT-5 Codex model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5",
-      displayName: "GPT-5",
-      description: "Azure OpenAI GPT-5 model with reasoning capabilities",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-mini",
-      displayName: "GPT-5 Mini",
-      description: "Azure OpenAI GPT-5 Mini model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-nano",
-      displayName: "GPT-5 Nano",
-      description: "Azure OpenAI GPT-5 Nano model",
-      // See OpenAI comment above
-      // maxOutputTokens: 128_000,
-      contextWindow: 400_000,
-      temperature: 1,
-    },
-    {
-      name: "gpt-5-chat",
-      displayName: "GPT-5 Chat",
-      description: "Azure OpenAI GPT-5 Chat model",
-      // See OpenAI comment above
-      // maxOutputTokens: 16_384,
-      contextWindow: 128_000,
-      temperature: 1,
-    },
-  ],
   xai: [
     // https://docs.x.ai/docs/models
     {
@@ -468,11 +215,9 @@ export const FREE_OPENROUTER_MODEL_NAMES = MODEL_OPTIONS.openrouter
   .map((model) => model.name);
 
 export const PROVIDER_TO_ENV_VAR: Record<string, string> = {
-  openai: "OPENAI_API_KEY",
-  anthropic: "ANTHROPIC_API_KEY",
+
   google: "GEMINI_API_KEY",
   openrouter: "OPENROUTER_API_KEY",
-  azure: "AZURE_API_KEY",
   xai: "XAI_API_KEY",
   bedrock: "AWS_BEARER_TOKEN_BEDROCK",
 };
@@ -487,18 +232,7 @@ export const CLOUD_PROVIDERS: Record<
     secondary?: boolean;
   }
 > = {
-  openai: {
-    displayName: "OpenAI",
-    hasFreeTier: false,
-    websiteUrl: "https://platform.openai.com/api-keys",
-    gatewayPrefix: "",
-  },
-  anthropic: {
-    displayName: "Anthropic",
-    hasFreeTier: false,
-    websiteUrl: "https://console.anthropic.com/settings/keys",
-    gatewayPrefix: "anthropic/",
-  },
+
   google: {
     displayName: "Google",
     hasFreeTier: true,
@@ -509,7 +243,7 @@ export const CLOUD_PROVIDERS: Record<
     displayName: "Google Vertex AI",
     hasFreeTier: false,
     websiteUrl: "https://console.cloud.google.com/vertex-ai",
-    // Use the same gateway prefix as Google Gemini for Dyad Pro compatibility.
+    // Use the same gateway prefix as Google Gemini for ORBIX Pro compatibility.
     gatewayPrefix: "gemini/",
     secondary: true,
   },
@@ -518,18 +252,6 @@ export const CLOUD_PROVIDERS: Record<
     hasFreeTier: true,
     websiteUrl: "https://openrouter.ai/settings/keys",
     gatewayPrefix: "openrouter/",
-  },
-  auto: {
-    displayName: "Dyad",
-    websiteUrl: "https://academy.dyad.sh/settings",
-    gatewayPrefix: "dyad/",
-  },
-  azure: {
-    displayName: "Azure OpenAI",
-    hasFreeTier: false,
-    websiteUrl: "https://portal.azure.com/",
-    gatewayPrefix: "",
-    secondary: true,
   },
   xai: {
     displayName: "xAI",

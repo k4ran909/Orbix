@@ -64,14 +64,11 @@ import { useShortcut } from "@/hooks/useShortcut";
 import { cn } from "@/lib/utils";
 import { normalizePath } from "../../../shared/normalizePath";
 import { showError } from "@/lib/toast";
-import { AnnotatorOnlyForPro } from "./AnnotatorOnlyForPro";
 import { useAttachments } from "@/hooks/useAttachments";
-import { useUserBudgetInfo } from "@/hooks/useUserBudgetInfo";
-import { Annotator } from "@/pro/ui/components/Annotator/Annotator";
-import { VisualEditingToolbar } from "./VisualEditingToolbar";
+
 
 interface ErrorBannerProps {
-  error: { message: string; source: "preview-app" | "dyad-app" } | undefined;
+  error: { message: string; source: "preview-app" | "Orbix-app" } | undefined;
   onDismiss: () => void;
   onAIFix: () => void;
 }
@@ -104,10 +101,10 @@ const ErrorBanner = ({ error, onDismiss, onAIFix }: ErrorBannerProps) => {
         <X size={14} className="text-red-500 dark:text-red-400" />
       </button>
 
-      {/* Add a little chip that says "Internal error" if source is "dyad-app" */}
-      {error.source === "dyad-app" && (
+      {/* Add a little chip that says "Internal error" if source is "Orbix-app" */}
+      {error.source === "Orbix-app" && (
         <div className="absolute top-1 right-1 p-1 bg-red-100 dark:bg-red-900 rounded-md text-xs font-medium text-red-700 dark:text-red-300">
-          Internal Dyad error
+          Internal ORBIX error
         </div>
       )}
 
@@ -115,7 +112,7 @@ const ErrorBanner = ({ error, onDismiss, onAIFix }: ErrorBannerProps) => {
       <div
         className={cn(
           "px-6 py-1 text-sm",
-          error.source === "dyad-app" && "pt-6",
+          error.source === "Orbix-app" && "pt-6",
         )}
       >
         <div
@@ -124,9 +121,8 @@ const ErrorBanner = ({ error, onDismiss, onAIFix }: ErrorBannerProps) => {
         >
           <ChevronRight
             size={14}
-            className={`mt-0.5 transform transition-transform ${
-              isCollapsed ? "" : "rotate-90"
-            }`}
+            className={`mt-0.5 transform transition-transform ${isCollapsed ? "" : "rotate-90"
+              }`}
           />
           {isCollapsed ? getTruncatedError() : error.message}
         </div>
@@ -142,8 +138,8 @@ const ErrorBanner = ({ error, onDismiss, onAIFix }: ErrorBannerProps) => {
             <span className="font-medium">Tip: </span>
             {isDockerError
               ? "Make sure Docker Desktop is running and try restarting the app."
-              : error.source === "dyad-app"
-                ? "Try restarting the Dyad app or restarting your computer to see if that fixes the error."
+              : error.source === "Orbix-app"
+                ? "Try restarting the ORBIX app or restarting your computer to see if that fixes the error."
                 : "Check if restarting the app fixes the error."}
           </span>
         </div>
@@ -179,8 +175,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
   const { streamMessage } = useStreamChat();
   const { routes: availableRoutes } = useParseRouter(selectedAppId);
   const { restartApp } = useRunApp();
-  const { userBudget } = useUserBudgetInfo();
-  const isProMode = !!userBudget;
+
 
   // Navigation state
   const [isComponentSelectorInitialized, setIsComponentSelectorInitialized] =
@@ -241,7 +236,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
       if (result.hasStaticText && iframeRef.current?.contentWindow) {
         iframeRef.current.contentWindow.postMessage(
           {
-            type: "enable-dyad-text-editing",
+            type: "enable-Orbix-text-editing",
             data: {
               componentId: componentId,
               runtimeId: visualEditingSelectedComponent?.runtimeId,
@@ -298,7 +293,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
       // Send message to iframe to get current styles
       iframeRef.current.contentWindow.postMessage(
         {
-          type: "get-dyad-component-styles",
+          type: "get-Orbix-component-styles",
           data: {
             elementId: visualEditingSelectedComponent.id,
             runtimeId: visualEditingSelectedComponent.runtimeId,
@@ -328,15 +323,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
     setPreviewIframeRef(iframeRef.current);
   }, [iframeRef.current, setPreviewIframeRef]);
 
-  // Send pro mode status to iframe
-  useEffect(() => {
-    if (iframeRef.current?.contentWindow && isComponentSelectorInitialized) {
-      iframeRef.current.contentWindow.postMessage(
-        { type: "dyad-pro-mode", enabled: isProMode },
-        "*",
-      );
-    }
-  }, [isProMode, isComponentSelectorInitialized]);
+
 
   // Add message listener for iframe errors and navigation events
   useEffect(() => {
@@ -418,26 +405,26 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
         return;
       }
 
-      if (event.data?.type === "dyad-component-selector-initialized") {
+      if (event.data?.type === "Orbix-component-selector-initialized") {
         setIsComponentSelectorInitialized(true);
         iframeRef.current?.contentWindow?.postMessage(
-          { type: "dyad-pro-mode", enabled: isProMode },
+          { type: "Orbix-pro-mode", enabled: false },
           "*",
         );
         return;
       }
 
-      if (event.data?.type === "dyad-text-updated") {
+      if (event.data?.type === "Orbix-text-updated") {
         handleTextUpdated(event.data);
         return;
       }
 
-      if (event.data?.type === "dyad-text-finalized") {
+      if (event.data?.type === "Orbix-text-finalized") {
         handleTextUpdated(event.data);
         return;
       }
 
-      if (event.data?.type === "dyad-component-selected") {
+      if (event.data?.type === "Orbix-component-selected") {
         console.log("Component picked:", event.data);
 
         const component = parseComponentSelection(event.data);
@@ -445,9 +432,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
         if (!component) return;
 
         // Store the coordinates
-        if (event.data.coordinates && isProMode) {
-          setCurrentComponentCoordinates(event.data.coordinates);
-        }
+
 
         // Add to selected components if not already there
         setSelectedComponentsPreview((prev) => {
@@ -465,24 +450,19 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
           return [...prev, component];
         });
 
-        if (isProMode) {
-          // Set as the highlighted component for visual editing
-          setVisualEditingSelectedComponent(component);
-          // Trigger AST analysis
-          analyzeComponent(component.id);
-        }
+
 
         return;
       }
 
-      if (event.data?.type === "dyad-component-deselected") {
+      if (event.data?.type === "Orbix-component-deselected") {
         const componentId = event.data.componentId;
         if (componentId) {
           // Disable text editing for the deselected component
           if (iframeRef.current?.contentWindow) {
             iframeRef.current.contentWindow.postMessage(
               {
-                type: "disable-dyad-text-editing",
+                type: "disable-Orbix-text-editing",
                 data: { componentId },
               },
               "*",
@@ -503,14 +483,14 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
         return;
       }
 
-      if (event.data?.type === "dyad-component-coordinates-updated") {
+      if (event.data?.type === "Orbix-component-coordinates-updated") {
         if (event.data.coordinates) {
           setCurrentComponentCoordinates(event.data.coordinates);
         }
         return;
       }
 
-      if (event.data?.type === "dyad-screenshot-response") {
+      if (event.data?.type === "Orbix-screenshot-response") {
         if (event.data.success && event.data.dataUrl) {
           setScreenshotDataUrl(event.data.dataUrl);
           setAnnotatorMode(true);
@@ -522,12 +502,12 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
 
       const { type, payload } = event.data as {
         type:
-          | "window-error"
-          | "unhandled-rejection"
-          | "iframe-sourcemapped-error"
-          | "build-error-report"
-          | "pushState"
-          | "replaceState";
+        | "window-error"
+        | "unhandled-rejection"
+        | "iframe-sourcemapped-error"
+        | "build-error-report"
+        | "pushState"
+        | "replaceState";
         payload?: {
           message?: string;
           stack?: string;
@@ -547,9 +527,8 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
           type === "iframe-sourcemapped-error"
             ? payload?.stack?.split("\n").slice(0, 1).join("\n")
             : payload?.stack;
-        const errorMessage = `Error ${
-          payload?.message || payload?.reason
-        }\nStack trace: ${stack}`;
+        const errorMessage = `Error ${payload?.message || payload?.reason
+          }\nStack trace: ${stack}`;
         console.error("Iframe error:", errorMessage);
         setErrorMessage({ message: errorMessage, source: "preview-app" });
         setConsoleEntries((prev) => [
@@ -649,8 +628,8 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
       iframeRef.current.contentWindow.postMessage(
         {
           type: newIsPicking
-            ? "activate-dyad-component-selector"
-            : "deactivate-dyad-component-selector",
+            ? "activate-Orbix-component-selector"
+            : "deactivate-Orbix-component-selector",
         },
         "*",
       );
@@ -666,7 +645,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
     if (iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
         {
-          type: "dyad-take-screenshot",
+          type: "Orbix-take-screenshot",
         },
         "*",
       );
@@ -800,11 +779,10 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleActivateComponentSelector}
-                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                      isPicking
-                        ? "bg-purple-500 text-white hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700"
-                        : " text-purple-700 hover:bg-purple-200  dark:text-purple-300 dark:hover:bg-purple-900"
-                    }`}
+                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${isPicking
+                      ? "bg-purple-500 text-white hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700"
+                      : " text-purple-700 hover:bg-purple-200  dark:text-purple-300 dark:hover:bg-purple-900"
+                      }`}
                     disabled={
                       loading ||
                       !selectedAppId ||
@@ -825,36 +803,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={handleAnnotatorClick}
-                    className={`p-1 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                      annotatorMode
-                        ? "bg-purple-500 text-white hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700"
-                        : " text-purple-700 hover:bg-purple-200  dark:text-purple-300 dark:hover:bg-purple-900"
-                    }`}
-                    disabled={
-                      loading ||
-                      !selectedAppId ||
-                      isPicking ||
-                      !isComponentSelectorInitialized
-                    }
-                    data-testid="preview-annotator-button"
-                  >
-                    <Pen size={16} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {annotatorMode
-                      ? "Annotator mode active"
-                      : "Activate annotator"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+
             <button
               className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed dark:text-gray-300"
               disabled={!canGoBack || loading || !selectedAppId}
@@ -889,7 +838,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                   <span className="truncate flex-1 mr-2 min-w-0">
                     {navigationHistory[currentHistoryPosition]
                       ? new URL(navigationHistory[currentHistoryPosition])
-                          .pathname
+                        .pathname
                       : "/"}
                   </span>
                   <ChevronDown size={14} className="flex-shrink-0" />
@@ -1059,17 +1008,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                     : { width: `${deviceWidthConfig[deviceMode]}px` }
                 }
               >
-                {userBudget ? (
-                  <Annotator
-                    screenshotUrl={screenshotDataUrl}
-                    onSubmit={addAttachments}
-                    handleAnnotatorClick={handleAnnotatorClick}
-                  />
-                ) : (
-                  <AnnotatorOnlyForPro
-                    onGoBack={() => setAnnotatorMode(false)}
-                  />
-                )}
+                null
               </div>
             ) : (
               <>
@@ -1092,16 +1031,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
                   allow="clipboard-read; clipboard-write; fullscreen; microphone; camera; display-capture; geolocation; autoplay; picture-in-picture"
                 />
                 {/* Visual Editing Toolbar */}
-                {isProMode &&
-                  visualEditingSelectedComponent &&
-                  selectedAppId && (
-                    <VisualEditingToolbar
-                      selectedComponent={visualEditingSelectedComponent}
-                      iframeRef={iframeRef}
-                      isDynamic={isDynamicComponent}
-                      hasStaticText={hasStaticText}
-                    />
-                  )}
+
               </>
             )}
           </div>
@@ -1112,7 +1042,7 @@ export const PreviewIframe = ({ loading }: { loading: boolean }) => {
 };
 
 function parseComponentSelection(data: any): ComponentSelection | null {
-  if (!data || data.type !== "dyad-component-selected") {
+  if (!data || data.type !== "Orbix-component-selected") {
     return null;
   }
 

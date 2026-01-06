@@ -1,2 +1,2 @@
 Adding supabase...
-<dyad-add-integration provider="supabase"></dyad-add-integration>
+<Orbix-add-integration provider="supabase"></Orbix-add-integration>

@@ -11,9 +11,9 @@ export interface MentionedAppCodebase {
 }
 
 export interface GetProviderOptionsParams {
-  dyadAppId: number;
-  dyadRequestId?: string;
-  dyadDisableFiles?: boolean;
+  OrbixAppId: number;
+  OrbixRequestId?: string;
+  OrbixDisableFiles?: boolean;
   smartContextMode?: SmartContextMode;
   files: CodebaseFile[];
   versionedFiles?: VersionedFiles;
@@ -27,9 +27,9 @@ export interface GetProviderOptionsParams {
  * Handles provider-specific configuration including thinking configs for Google/Vertex.
  */
 export function getProviderOptions({
-  dyadAppId,
-  dyadRequestId,
-  dyadDisableFiles,
+  OrbixAppId,
+  OrbixRequestId,
+  OrbixDisableFiles,
   smartContextMode,
   files,
   versionedFiles,
@@ -38,19 +38,19 @@ export function getProviderOptions({
   settings,
 }: GetProviderOptionsParams): Record<string, any> {
   const providerOptions: Record<string, any> = {
-    "dyad-engine": {
-      dyadAppId,
-      dyadRequestId,
-      dyadDisableFiles,
-      dyadSmartContextMode: smartContextMode,
-      dyadFiles: versionedFiles ? undefined : files,
-      dyadVersionedFiles: versionedFiles,
-      dyadMentionedApps: mentionedAppsCodebases.map(({ files, appName }) => ({
+    "Orbix-engine": {
+      OrbixAppId,
+      OrbixRequestId,
+      OrbixDisableFiles,
+      OrbixSmartContextMode: smartContextMode,
+      OrbixFiles: versionedFiles ? undefined : files,
+      orbixVersionedFiles: versionedFiles,
+      OrbixMentionedApps: mentionedAppsCodebases.map(({ files, appName }) => ({
         appName,
         files,
       })),
     },
-    "dyad-gateway": getExtraProviderOptions(builtinProviderId, settings),
+    "Orbix-gateway": getExtraProviderOptions(builtinProviderId, settings),
     openai: {
       reasoningSummary: "auto",
     } satisfies OpenAIResponsesProviderOptions,
@@ -97,10 +97,9 @@ export interface GetAiHeadersParams {
 export function getAiHeaders({
   builtinProviderId,
 }: GetAiHeadersParams): Record<string, string> | undefined {
+  // Anthropic removed
   if (builtinProviderId === "anthropic") {
-    return {
-      "anthropic-beta": "context-1m-2025-08-07",
-    };
+    return undefined;
   }
   return undefined;
 }

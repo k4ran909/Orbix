@@ -2,12 +2,12 @@ import path from "node:path";
 import os from "node:os";
 import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 
-export function getDyadAppPath(appPath: string): string {
+export function getOrbixAppPath(appPath: string): string {
   if (IS_TEST_BUILD) {
     const electron = getElectron();
-    return path.join(electron!.app.getPath("userData"), "dyad-apps", appPath);
+    return path.join(electron!.app.getPath("userData"), "Orbix-apps", appPath);
   }
-  return path.join(os.homedir(), "dyad-apps", appPath);
+  return path.join(os.homedir(), "Orbix-apps", appPath);
 }
 
 export function getTypeScriptCachePath(): string {

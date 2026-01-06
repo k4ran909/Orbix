@@ -1,6 +1,6 @@
-<dyad-rename from="src/App.tsx" to="src/Renamed.tsx">
-</dyad-rename>
+<Orbix-rename from="src/App.tsx" to="src/Renamed.tsx">
+</Orbix-rename>
 
-<dyad-write path="src/Renamed.tsx">
+<Orbix-write path="src/Renamed.tsx">
 // newly added content to renamed file should exist
-</dyad-write>
+</Orbix-write>

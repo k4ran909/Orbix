@@ -24,7 +24,7 @@ export function registerSecurityHandlers() {
         and(
           eq(chats.appId, appId),
           eq(messages.role, "assistant"),
-          like(messages.content, "%<dyad-security-finding%"),
+          like(messages.content, "%<Orbix-security-finding%"),
         ),
       )
       .orderBy(desc(messages.createdAt))
@@ -52,10 +52,10 @@ export function registerSecurityHandlers() {
 function parseSecurityFindings(content: string): SecurityFinding[] {
   const findings: SecurityFinding[] = [];
 
-  // Regex to match dyad-security-finding tags
+  // Regex to match Orbix-security-finding tags
   // Using lazy quantifier with proper boundaries to prevent catastrophic backtracking
   const regex =
-    /<dyad-security-finding\s+title="([^"]+)"\s+level="(critical|high|medium|low)">([\s\S]*?)<\/dyad-security-finding>/g;
+    /<Orbix-security-finding\s+title="([^"]+)"\s+level="(critical|high|medium|low)">([\s\S]*?)<\/Orbix-security-finding>/g;
 
   let match;
   while ((match = regex.exec(content)) !== null) {

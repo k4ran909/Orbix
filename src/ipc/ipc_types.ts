@@ -150,7 +150,7 @@ export interface SystemDebugInfo {
   telemetryId: string;
   telemetryConsent: string;
   telemetryUrl: string;
-  dyadVersion: string;
+  orbixVersion: string;
   platform: string;
   architecture: string;
   logs: string;
@@ -203,30 +203,30 @@ export interface LanguageModelProvider {
 
 export type LanguageModel =
   | {
-      id: number;
-      apiName: string;
-      displayName: string;
-      description: string;
-      tag?: string;
-      tagColor?: string;
-      maxOutputTokens?: number;
-      contextWindow?: number;
-      temperature?: number;
-      dollarSigns?: number;
-      type: "custom";
-    }
+    id: number;
+    apiName: string;
+    displayName: string;
+    description: string;
+    tag?: string;
+    tagColor?: string;
+    maxOutputTokens?: number;
+    contextWindow?: number;
+    temperature?: number;
+    dollarSigns?: number;
+    type: "custom";
+  }
   | {
-      apiName: string;
-      displayName: string;
-      description: string;
-      tag?: string;
-      tagColor?: string;
-      maxOutputTokens?: number;
-      contextWindow?: number;
-      temperature?: number;
-      dollarSigns?: number;
-      type: "local" | "cloud";
-    };
+    apiName: string;
+    displayName: string;
+    description: string;
+    tag?: string;
+    tagColor?: string;
+    maxOutputTokens?: number;
+    contextWindow?: number;
+    temperature?: number;
+    dollarSigns?: number;
+    type: "local" | "cloud";
+  };
 
 export interface CreateCustomLanguageModelProviderParams {
   id: string;
@@ -497,7 +497,7 @@ export interface McpServer {
 }
 
 export interface CreateMcpServer
-  extends Omit<McpServer, "id" | "createdAt" | "updatedAt"> {}
+  extends Omit<McpServer, "id" | "createdAt" | "updatedAt"> { }
 export type McpServerUpdate = Partial<McpServer> & Pick<McpServer, "id">;
 export type McpToolConsentType = "ask" | "always" | "denied";
 
@@ -529,12 +529,12 @@ export interface GithubRepository {
 
 export type CloneRepoReturnType =
   | {
-      app: App;
-      hasAiRules: boolean;
-    }
+    app: App;
+    hasAiRules: boolean;
+  }
   | {
-      error: string;
-    };
+    error: string;
+  };
 
 export interface SupabaseBranch {
   id: string;

@@ -20,10 +20,10 @@ test("copy message content - basic functionality", async ({ po }) => {
 
   // Test that copy functionality works
   expect(clipboardContent.length).toBeGreaterThan(0);
-  expect(clipboardContent).not.toContain("<dyad-");
+  expect(clipboardContent).not.toContain("<Orbix-");
 });
 
-test("copy message content - dyad-write conversion", async ({ po }) => {
+test("copy message content - Orbix-write conversion", async ({ po }) => {
   await po.setUp({ autoApprove: true });
   await po.importApp("minimal");
 
@@ -42,10 +42,10 @@ test("copy message content - dyad-write conversion", async ({ po }) => {
     navigator.clipboard.readText(),
   );
 
-  // Should convert dyad-write to markdown format (flexible path matching)
+  // Should convert Orbix-write to markdown format (flexible path matching)
   expect(clipboardContent).toContain("### File:");
   expect(clipboardContent).toContain("```");
-  expect(clipboardContent).not.toContain("<dyad-write");
+  expect(clipboardContent).not.toContain("<Orbix-write");
 });
 
 test("copy button tooltip states", async ({ po }) => {

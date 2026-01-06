@@ -1,6 +1,6 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI as createGoogle } from "@ai-sdk/google";
-import { createAnthropic } from "@ai-sdk/anthropic";
+
 import { createXai } from "@ai-sdk/xai";
 import { createVertex as createGoogleVertex } from "@ai-sdk/google-vertex";
 import { createAzure } from "@ai-sdk/azure";
@@ -19,14 +19,14 @@ import log from "electron-log";
 import { FREE_OPENROUTER_MODEL_NAMES } from "../shared/language_model_constants";
 import { getLanguageModelProviders } from "../shared/language_model_helpers";
 import { LanguageModelProvider } from "../ipc_types";
-import { createDyadEngine } from "./llm_engine_provider";
+import { createOrbixEngine } from "./llm_engine_provider";
 
 import { LM_STUDIO_BASE_URL } from "./lm_studio_utils";
 import { createOllamaProvider } from "./ollama_provider";
 import { getOllamaApiUrl } from "../handlers/local_model_ollama_handler";
 import { createFallback } from "./fallback_ai_model";
 
-const dyadEngineUrl = process.env.DYAD_ENGINE_URL;
+const OrbixEngineUrl = process.env.Orbix_ENGINE_URL;
 
 const AUTO_MODELS = [
   {
@@ -37,10 +37,7 @@ const AUTO_MODELS = [
     provider: "openrouter",
     name: "qwen/qwen3-coder:free",
   },
-  {
-    provider: "anthropic",
-    name: "claude-sonnet-4-20250514",
-  },
+
   {
     provider: "openai",
     name: "gpt-4.1",
@@ -64,7 +61,7 @@ export async function getModelClient(
 }> {
   const allProviders = await getLanguageModelProviders();
 
-  const dyadApiKey = settings.providerSettings?.auto?.apiKey?.value;
+  const OrbixApiKey = settings.providerSettings?.auto?.apiKey?.value;
 
   // --- Handle specific provider ---
   const providerConfig = allProviders.find((p) => p.id === model.provider);
@@ -73,24 +70,24 @@ export async function getModelClient(
     throw new Error(`Configuration not found for provider: ${model.provider}`);
   }
 
-  // Handle Dyad Pro override
-  if (dyadApiKey && settings.enableDyadPro) {
-    // Check if the selected provider supports Dyad Pro (has a gateway prefix) OR
+  // Handle ORBIX Pro override
+  if (OrbixApiKey && settings.enableOrbixPro) {
+    // Check if the selected provider supports ORBIX Pro (has a gateway prefix) OR
     // we're using local engine.
     // IMPORTANT: some providers like OpenAI have an empty string gateway prefix,
     // so we do a nullish and not a truthy check here.
-    if (providerConfig.gatewayPrefix != null || dyadEngineUrl) {
+    if (providerConfig.gatewayPrefix != null || OrbixEngineUrl) {
       const enableSmartFilesContext = settings.enableProSmartFilesContextMode;
-      const provider = createDyadEngine({
-        apiKey: dyadApiKey,
-        baseURL: dyadEngineUrl ?? "https://engine.dyad.sh/v1",
+      const provider = createOrbixEngine({
+        apiKey: OrbixApiKey,
+        baseURL: OrbixEngineUrl ?? "https://engine.orbix.sh/v1",
         originalProviderId: model.provider,
-        dyadOptions: {
+        OrbixOptions: {
           enableLazyEdits:
             settings.selectedChatMode === "ask"
               ? false
               : settings.enableProLazyEditsMode &&
-                settings.proLazyEditsMode !== "v2",
+              settings.proLazyEditsMode !== "v2",
           enableSmartFilesContext,
           enableWebSearch: settings.enableProWebSearch,
         },
@@ -98,11 +95,11 @@ export async function getModelClient(
       });
 
       logger.info(
-        `\x1b[1;97;44m Using Dyad Pro API key for model: ${model.name} \x1b[0m`,
+        `\x1b[1;97;44m Using ORBIX Pro API key for model: ${model.name} \x1b[0m`,
       );
 
       logger.info(
-        `\x1b[1;30;42m Using Dyad Pro engine: ${dyadEngineUrl ?? "<prod>"} \x1b[0m`,
+        `\x1b[1;30;42m Using ORBIX Pro engine: ${OrbixEngineUrl ?? "<prod>"} \x1b[0m`,
       );
 
       // Do not use free variant (for openrouter).
@@ -119,7 +116,7 @@ export async function getModelClient(
       };
     } else {
       logger.warn(
-        `Dyad Pro enabled, but provider ${model.provider} does not have a gateway prefix defined. Falling back to direct provider connection.`,
+        `ORBIX Pro enabled, but provider ${model.provider} does not have a gateway prefix defined. Falling back to direct provider connection.`,
       );
       // Fall through to regular provider logic if gateway prefix is missing
     }
@@ -210,16 +207,7 @@ function getRegularModelClient(
         backupModelClients: [],
       };
     }
-    case "anthropic": {
-      const provider = createAnthropic({ apiKey });
-      return {
-        modelClient: {
-          model: provider(model.name),
-          builtinProviderId: providerId,
-        },
-        backupModelClients: [],
-      };
-    }
+
     case "xai": {
       const provider = createXai({ apiKey });
       return {
@@ -259,9 +247,9 @@ function getRegularModelClient(
         baseURL,
         googleAuthOptions: serviceAccountKey
           ? {
-              // Expecting the user to paste the full JSON of the service account key
-              credentials: JSON.parse(serviceAccountKey),
-            }
+            // Expecting the user to paste the full JSON of the service account key
+            credentials: JSON.parse(serviceAccountKey),
+          }
           : undefined,
       });
       return {

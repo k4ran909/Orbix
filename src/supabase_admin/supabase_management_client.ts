@@ -117,7 +117,7 @@ export async function refreshSupabaseToken(): Promise<void> {
   try {
     // Make request to Supabase refresh endpoint
     const response = await fetch(
-      "https://supabase-oauth.dyad.sh/api/connect-supabase/refresh",
+      "https://supabase-oauth.orbix.sh/api/connect-supabase/refresh",
       {
         method: "POST",
         headers: {
@@ -246,7 +246,7 @@ async function refreshSupabaseTokenForOrganization(
 
   try {
     const response = await fetch(
-      "https://supabase-oauth.dyad.sh/api/connect-supabase/refresh",
+      "https://supabase-oauth.orbix.sh/api/connect-supabase/refresh",
       {
         method: "POST",
         headers: {
@@ -991,8 +991,7 @@ async function createResponseError(response: Response, action: string) {
   const errorBody = await safeParseErrorResponseBody(response);
 
   return new SupabaseManagementAPIError(
-    `Failed to ${action}: ${response.statusText} (${response.status})${
-      errorBody ? `: ${errorBody.message}` : ""
+    `Failed to ${action}: ${response.statusText} (${response.status})${errorBody ? `: ${errorBody.message}` : ""
     }`,
     response,
   );

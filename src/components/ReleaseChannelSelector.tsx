@@ -23,22 +23,16 @@ export function ReleaseChannelSelector() {
     if (value === "stable") {
       toast("Using Stable release channel", {
         description:
-          "You'll stay on your current version until a newer stable release is available, or you can manually downgrade now.",
-        action: {
-          label: "Download Stable",
-          onClick: () => {
-            IpcClient.getInstance().openExternalUrl("https://dyad.sh/download");
-          },
-        },
+          "You'll stay on your current version until a newer stable release is available.",
       });
     } else {
       toast("Using Beta release channel", {
         description:
-          "You will need to restart Dyad for your settings to take effect.",
+          "You will need to restart ORBIX for your settings to take effect.",
         action: {
-          label: "Restart Dyad",
+          label: "Restart ORBIX",
           onClick: () => {
-            IpcClient.getInstance().restartDyad();
+            IpcClient.getInstance().restartOrbix();
           },
         },
       });

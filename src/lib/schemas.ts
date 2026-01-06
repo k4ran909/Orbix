@@ -60,10 +60,10 @@ export const AppSearchResultsSchema = z.array(AppSearchResultSchema);
 
 const providers = [
   "openai",
-  "anthropic",
+
   "google",
   "vertex",
-  "auto",
+
   "openrouter",
   "ollama",
   "lmstudio",
@@ -199,11 +199,11 @@ export const ExperimentsSchema = z.object({
 });
 export type Experiments = z.infer<typeof ExperimentsSchema>;
 
-export const DyadProBudgetSchema = z.object({
+export const OrbixProBudgetSchema = z.object({
   budgetResetAt: z.string(),
   maxBudget: z.number(),
 });
-export type DyadProBudget = z.infer<typeof DyadProBudgetSchema>;
+export type OrbixProBudget = z.infer<typeof OrbixProBudgetSchema>;
 
 export const GlobPathSchema = z.object({
   globPath: z.string(),
@@ -261,7 +261,7 @@ export const UserSettingsSchema = z.object({
   telemetryConsent: z.enum(["opted_in", "opted_out", "unset"]).optional(),
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
-  enableDyadPro: z.boolean().optional(),
+  enableOrbixPro: z.boolean().optional(),
   experiments: ExperimentsSchema.optional(),
   lastShownReleaseNotesVersion: z.string().optional(),
   maxChatTurnsInContext: z.number().optional(),
@@ -304,7 +304,7 @@ export const UserSettingsSchema = z.object({
   // DEPRECATED.
   ////////////////////////////////
   enableProSaverMode: z.boolean().optional(),
-  dyadProBudget: DyadProBudgetSchema.optional(),
+  orbixProBudget: OrbixProBudgetSchema.optional(),
   runtimeMode: RuntimeModeSchema.optional(),
 });
 
@@ -313,12 +313,12 @@ export const UserSettingsSchema = z.object({
  */
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-export function isDyadProEnabled(settings: UserSettings): boolean {
-  return settings.enableDyadPro === true && hasDyadProKey(settings);
+export function isOrbixProEnabled(settings: UserSettings): boolean {
+  return false;
 }
 
-export function hasDyadProKey(settings: UserSettings): boolean {
-  return !!settings.providerSettings?.auto?.apiKey?.value;
+export function hasOrbixProKey(settings: UserSettings): boolean {
+  return false;
 }
 
 export function isSupabaseConnected(settings: UserSettings | null): boolean {
@@ -327,16 +327,16 @@ export function isSupabaseConnected(settings: UserSettings | null): boolean {
   }
   return Boolean(
     settings.supabase?.accessToken ||
-      (settings.supabase?.organizations &&
-        Object.keys(settings.supabase.organizations).length > 0),
+    (settings.supabase?.organizations &&
+      Object.keys(settings.supabase.organizations).length > 0),
   );
 }
 
 export function isTurboEditsV2Enabled(settings: UserSettings): boolean {
   return Boolean(
-    isDyadProEnabled(settings) &&
-      settings.enableProLazyEditsMode === true &&
-      settings.proLazyEditsMode === "v2",
+    isOrbixProEnabled(settings) &&
+    settings.enableProLazyEditsMode === true &&
+    settings.proLazyEditsMode === "v2",
   );
 }
 

@@ -113,9 +113,9 @@ function FooterComponent({ context }: { context?: FooterContext }) {
                         versionId: currentMessage.sourceCommitHash,
                         currentChatMessageId: userMessage
                           ? {
-                              chatId: selectedChatId,
-                              messageId: userMessage.id,
-                            }
+                            chatId: selectedChatId,
+                            messageId: userMessage.id,
+                          }
                           : undefined,
                       });
                       const chat =
@@ -234,7 +234,7 @@ function FooterComponent({ context }: { context?: FooterContext }) {
       )}
 
       {isStreaming &&
-        !settings?.enableDyadPro &&
+        !settings?.enableOrbixPro &&
         !userBudget &&
         messages.length > 0 && (
           <PromoMessage

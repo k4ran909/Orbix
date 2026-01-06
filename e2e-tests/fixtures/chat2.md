@@ -1,3 +1,3 @@
 chat2
 
-<dyad-chat-summary>Chat 2</dyad-chat-summary>
+<Orbix-chat-summary>Chat 2</Orbix-chat-summary>

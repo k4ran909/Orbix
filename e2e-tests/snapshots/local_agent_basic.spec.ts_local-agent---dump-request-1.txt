@@ -1,6 +1,6 @@
 {
   "body": {
-    "model": "dyad/auto",
+    "model": "Orbix/auto",
     "max_tokens": 32000,
     "temperature": 0,
     "messages": [
@@ -14,7 +14,7 @@
       },
       {
         "role": "assistant",
-        "content": "\n  <dyad-write path=\"file1.txt\">\n  A file (2)\n  </dyad-write>\n  More\n  EOM"
+        "content": "\n  <Orbix-write path=\"file1.txt\">\n  A file (2)\n  </Orbix-write>\n  More\n  EOM"
       },
       {
         "role": "user",
@@ -252,6 +252,6 @@
     }
   },
   "headers": {
-    "authorization": "Bearer testdyadkey"
+    "authorization": "Bearer testOrbixkey"
   }
 }

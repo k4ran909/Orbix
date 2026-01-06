@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {} from "react";
+import { } from "react";
 
 interface ProviderSettingsHeaderProps {
   providerDisplayName: string;
@@ -22,21 +22,21 @@ interface ProviderSettingsHeaderProps {
   isLoading: boolean;
   hasFreeTier?: boolean;
   providerWebsiteUrl?: string;
-  isDyad: boolean;
+  isOrbix: boolean;
   onBackClick: () => void;
 }
 
 function getKeyButtonText({
   isConfigured,
-  isDyad,
+  isOrbix,
 }: {
   isConfigured: boolean;
-  isDyad: boolean;
+  isOrbix: boolean;
 }) {
-  if (isDyad) {
+  if (isOrbix) {
     return isConfigured
-      ? "Manage Dyad Pro Subscription"
-      : "Setup Dyad Pro Subscription";
+      ? "Manage ORBIX Pro Subscription"
+      : "Setup ORBIX Pro Subscription";
   }
   return isConfigured ? "Manage API Keys" : "Setup API Key";
 }
@@ -47,7 +47,7 @@ export function ProviderSettingsHeader({
   isLoading,
   hasFreeTier,
   providerWebsiteUrl,
-  isDyad,
+  isOrbix,
   onBackClick,
 }: ProviderSettingsHeaderProps) {
   const handleGetApiKeyClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,7 +63,7 @@ export function ProviderSettingsHeader({
       className="mb-4 cursor-pointer py-5 w-full ring-4 ring-primary/60 shadow-lg shadow-primary/30 border-primary/60"
     >
       <KeyRound className="mr-2 h-4 w-4" />
-      {getKeyButtonText({ isConfigured, isDyad })}
+      {getKeyButtonText({ isConfigured, isOrbix })}
       <ExternalLink className="ml-2 h-4 w-4" />
     </Button>
   );
@@ -89,11 +89,10 @@ export function ProviderSettingsHeader({
             <Skeleton className="h-6 w-6 rounded-full" />
           ) : (
             <Circle
-              className={`h-5 w-5 ${
-                isConfigured
-                  ? "fill-green-500 text-green-600"
-                  : "fill-yellow-400 text-yellow-500"
-              }`}
+              className={`h-5 w-5 ${isConfigured
+                ? "fill-green-500 text-green-600"
+                : "fill-yellow-400 text-yellow-500"
+                }`}
             />
           )}
           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">

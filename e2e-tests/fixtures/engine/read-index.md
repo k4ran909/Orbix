@@ -1,3 +1,3 @@
 Read the index page:
-<dyad-read path="src/pages/Index.tsx"></dyad-read>
+<Orbix-read path="src/pages/Index.tsx"></Orbix-read>
 Done.

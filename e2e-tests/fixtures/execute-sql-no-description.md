@@ -1,7 +1,7 @@
 No description!
 
-<dyad-execute-sql>
+<Orbix-execute-sql>
 DROP TABLE users;
-</dyad-execute-sql>
+</Orbix-execute-sql>
 
 Done.

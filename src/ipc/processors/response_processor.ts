@@ -2,7 +2,7 @@ import { db } from "../../db";
 import { chats, messages } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import fs from "node:fs";
-import { getDyadAppPath } from "../../paths/paths";
+import { getOrbixAppPath } from "../../paths/paths";
 import path from "node:path";
 import { safeJoin } from "../utils/path_utils";
 
@@ -30,14 +30,14 @@ import {
 import { readSettings } from "@/main/settings";
 import { writeMigrationFile } from "../utils/file_utils";
 import {
-  getDyadWriteTags,
-  getDyadRenameTags,
-  getDyadDeleteTags,
-  getDyadAddDependencyTags,
-  getDyadExecuteSqlTags,
-  getDyadSearchReplaceTags,
-} from "../utils/dyad_tag_parser";
-import { applySearchReplace } from "../../pro/main/ipc/processors/search_replace_processor";
+  getOrbixWriteTags,
+  getOrbixRenameTags,
+  getOrbixDeleteTags,
+  getOrbixAddDependencyTags,
+  getOrbixExecuteSqlTags,
+  getOrbixSearchReplaceTags,
+} from "../utils/orbix_tag_parser";
+
 import { storeDbTimestampAtCurrentVersion } from "../utils/neon_timestamp_utils";
 
 import { FileUploadsState } from "../utils/file_uploads_state";
@@ -50,49 +50,7 @@ interface Output {
   error: unknown;
 }
 
-export async function dryRunSearchReplace({
-  fullResponse,
-  appPath,
-}: {
-  fullResponse: string;
-  appPath: string;
-}) {
-  const issues: { filePath: string; error: string }[] = [];
-  const dyadSearchReplaceTags = getDyadSearchReplaceTags(fullResponse);
-  for (const tag of dyadSearchReplaceTags) {
-    const filePath = tag.path;
-    const fullFilePath = safeJoin(appPath, filePath);
-    try {
-      if (!fs.existsSync(fullFilePath)) {
-        issues.push({
-          filePath,
-          error: `Search-replace target file does not exist: ${filePath}`,
-        });
-        continue;
-      }
 
-      const original = await readFile(fullFilePath, "utf8");
-      const result = applySearchReplace(original, tag.content);
-      if (!result.success || typeof result.content !== "string") {
-        issues.push({
-          filePath,
-          error:
-            "Unable to apply search-replace to file because: " + result.error,
-        });
-        logger.warn(
-          `Unable to apply search-replace to file ${filePath} because: ${result.error}. Original content:\n${original}\n Diff content:\n${tag.content}`,
-        );
-        continue;
-      }
-    } catch (error) {
-      issues.push({
-        filePath,
-        error: error?.toString() ?? "Unknown error",
-      });
-    }
-  }
-  return issues;
-}
 
 export async function processFullResponseActions(
   fullResponse: string,
@@ -138,13 +96,13 @@ export async function processFullResponseActions(
       logger.error("Error creating Neon branch at current version:", error);
       throw new Error(
         "Could not create Neon branch; database versioning functionality is not working: " +
-          error,
+        error,
       );
     }
   }
 
   const settings: UserSettings = readSettings();
-  const appPath = getDyadAppPath(chatWithApp.app.path);
+  const appPath = getOrbixAppPath(chatWithApp.app.path);
   const writtenFiles: string[] = [];
   const renamedFiles: string[] = [];
   const deletedFiles: string[] = [];
@@ -157,12 +115,12 @@ export async function processFullResponseActions(
 
   try {
     // Extract all tags
-    const dyadWriteTags = getDyadWriteTags(fullResponse);
-    const dyadRenameTags = getDyadRenameTags(fullResponse);
-    const dyadDeletePaths = getDyadDeleteTags(fullResponse);
-    const dyadAddDependencyPackages = getDyadAddDependencyTags(fullResponse);
-    const dyadExecuteSqlQueries = chatWithApp.app.supabaseProjectId
-      ? getDyadExecuteSqlTags(fullResponse)
+    const OrbixWriteTags = getOrbixWriteTags(fullResponse);
+    const OrbixRenameTags = getOrbixRenameTags(fullResponse);
+    const OrbixDeletePaths = getOrbixDeleteTags(fullResponse);
+    const OrbixAddDependencyPackages = getOrbixAddDependencyTags(fullResponse);
+    const OrbixExecuteSqlQueries = chatWithApp.app.supabaseProjectId
+      ? getOrbixExecuteSqlTags(fullResponse)
       : [];
 
     const message = await db.query.messages.findFirst({
@@ -179,8 +137,8 @@ export async function processFullResponseActions(
     }
 
     // Handle SQL execution tags
-    if (dyadExecuteSqlQueries.length > 0) {
-      for (const query of dyadExecuteSqlQueries) {
+    if (OrbixExecuteSqlQueries.length > 0) {
+      for (const query of OrbixExecuteSqlQueries) {
         try {
           await executeSupabaseSql({
             supabaseProjectId: chatWithApp.app.supabaseProjectId!,
@@ -211,20 +169,20 @@ export async function processFullResponseActions(
           });
         }
       }
-      logger.log(`Executed ${dyadExecuteSqlQueries.length} SQL queries`);
+      logger.log(`Executed ${OrbixExecuteSqlQueries.length} SQL queries`);
     }
 
     // TODO: Handle add dependency tags
-    if (dyadAddDependencyPackages.length > 0) {
+    if (OrbixAddDependencyPackages.length > 0) {
       try {
         await executeAddDependency({
-          packages: dyadAddDependencyPackages,
+          packages: OrbixAddDependencyPackages,
           message: message,
           appPath,
         });
       } catch (error) {
         errors.push({
-          message: `Failed to add dependencies: ${dyadAddDependencyPackages.join(
+          message: `Failed to add dependencies: ${OrbixAddDependencyPackages.join(
             ", ",
           )}`,
           error: error,
@@ -254,7 +212,7 @@ export async function processFullResponseActions(
     //////////////////////
 
     // Process all file deletions
-    for (const filePath of dyadDeletePaths) {
+    for (const filePath of OrbixDeletePaths) {
       const fullFilePath = safeJoin(appPath, filePath);
 
       // Track if this is a shared module
@@ -300,7 +258,7 @@ export async function processFullResponseActions(
     }
 
     // Process all file renames
-    for (const tag of dyadRenameTags) {
+    for (const tag of OrbixRenameTags) {
       const fromPath = safeJoin(appPath, tag.from);
       const toPath = safeJoin(appPath, tag.to);
 
@@ -363,63 +321,10 @@ export async function processFullResponseActions(
       }
     }
 
-    // Process all search-replace edits
-    const dyadSearchReplaceTags = getDyadSearchReplaceTags(fullResponse);
-    for (const tag of dyadSearchReplaceTags) {
-      const filePath = tag.path;
-      const fullFilePath = safeJoin(appPath, filePath);
 
-      // Track if this is a shared module
-      if (isSharedServerModule(filePath)) {
-        sharedModulesChanged = true;
-      }
-
-      try {
-        if (!fs.existsSync(fullFilePath)) {
-          // Do not show warning to user because we already attempt to do a <dyad-write> tag to fix it.
-          logger.warn(`Search-replace target file does not exist: ${filePath}`);
-          continue;
-        }
-        const original = await readFile(fullFilePath, "utf8");
-        const result = applySearchReplace(original, tag.content);
-        if (!result.success || typeof result.content !== "string") {
-          // Do not show warning to user because we already attempt to do a <dyad-write> and/or a subsequent <dyad-search-replace> tag to fix it.
-          logger.warn(
-            `Failed to apply search-replace to ${filePath}: ${result.error ?? "unknown"}`,
-          );
-          continue;
-        }
-        // Write modified content
-        fs.writeFileSync(fullFilePath, result.content);
-        writtenFiles.push(filePath);
-
-        // If server function (not shared), redeploy (skip if shared modules changed)
-        if (isServerFunction(filePath) && !sharedModulesChanged) {
-          try {
-            await deploySupabaseFunction({
-              supabaseProjectId: chatWithApp.app.supabaseProjectId!,
-              functionName: extractFunctionNameFromPath(filePath),
-              appPath,
-              organizationSlug:
-                chatWithApp.app.supabaseOrganizationSlug ?? null,
-            });
-          } catch (error) {
-            errors.push({
-              message: `Failed to deploy Supabase function after search-replace: ${filePath}`,
-              error: error,
-            });
-          }
-        }
-      } catch (error) {
-        errors.push({
-          message: `Error applying search-replace to ${filePath}`,
-          error: error,
-        });
-      }
-    }
 
     // Process all file writes
-    for (const tag of dyadWriteTags) {
+    for (const tag of OrbixWriteTags) {
       const filePath = tag.path;
       let content: string | Buffer = tag.content;
       const fullFilePath = safeJoin(appPath, filePath);
@@ -518,7 +423,7 @@ export async function processFullResponseActions(
       writtenFiles.length > 0 ||
       renamedFiles.length > 0 ||
       deletedFiles.length > 0 ||
-      dyadAddDependencyPackages.length > 0;
+      OrbixAddDependencyPackages.length > 0;
 
     let uncommittedFiles: string[] = [];
     let extraFilesError: string | undefined;
@@ -537,16 +442,16 @@ export async function processFullResponseActions(
         changes.push(`renamed ${renamedFiles.length} file(s)`);
       if (deletedFiles.length > 0)
         changes.push(`deleted ${deletedFiles.length} file(s)`);
-      if (dyadAddDependencyPackages.length > 0)
+      if (OrbixAddDependencyPackages.length > 0)
         changes.push(
-          `added ${dyadAddDependencyPackages.join(", ")} package(s)`,
+          `added ${OrbixAddDependencyPackages.join(", ")} package(s)`,
         );
-      if (dyadExecuteSqlQueries.length > 0)
-        changes.push(`executed ${dyadExecuteSqlQueries.length} SQL queries`);
+      if (OrbixExecuteSqlQueries.length > 0)
+        changes.push(`executed ${OrbixExecuteSqlQueries.length} SQL queries`);
 
       let message = chatSummary
-        ? `[dyad] ${chatSummary} - ${changes.join(", ")}`
-        : `[dyad] ${changes.join(", ")}`;
+        ? `[Orbix] ${chatSummary} - ${changes.join(", ")}`
+        : `[Orbix] ${changes.join(", ")}`;
       // Use chat summary, if provided, or default for commit message
       let commitHash = await gitCommit({
         path: appPath,
@@ -563,17 +468,17 @@ export async function processFullResponseActions(
         try {
           commitHash = await gitCommit({
             path: appPath,
-            message: message + " + extra files edited outside of Dyad",
+            message: message + " + extra files edited outside of Orbix",
             amend: true,
           });
           logger.log(
-            `Amend commit with changes outside of dyad: ${uncommittedFiles.join(", ")}`,
+            `Amend commit with changes outside of Orbix: ${uncommittedFiles.join(", ")}`,
           );
         } catch (error) {
           // Just log, but don't throw an error because the user can still
-          // commit these changes outside of Dyad if needed.
+          // commit these changes outside of Orbix if needed.
           logger.error(
-            `Failed to commit changes outside of dyad: ${uncommittedFiles.join(
+            `Failed to commit changes outside of Orbix: ${uncommittedFiles.join(
               ", ",
             )}`,
           );
@@ -609,17 +514,17 @@ export async function processFullResponseActions(
   } finally {
     const appendedContent = `
     ${warnings
-      .map(
-        (warning) =>
-          `<dyad-output type="warning" message="${warning.message}">${warning.error}</dyad-output>`,
-      )
-      .join("\n")}
+        .map(
+          (warning) =>
+            `<Orbix-output type="warning" message="${warning.message}">${warning.error}</Orbix-output>`,
+        )
+        .join("\n")}
     ${errors
-      .map(
-        (error) =>
-          `<dyad-output type="error" message="${error.message}">${error.error}</dyad-output>`,
-      )
-      .join("\n")}
+        .map(
+          (error) =>
+            `<Orbix-output type="error" message="${error.message}">${error.error}</Orbix-output>`,
+        )
+        .join("\n")}
     `;
     if (appendedContent.length > 0) {
       await db

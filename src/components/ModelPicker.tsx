@@ -1,4 +1,4 @@
-import { isDyadProEnabled, type LargeLanguageModel } from "@/lib/schemas";
+import { isOrbixProEnabled, type LargeLanguageModel } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -116,22 +116,22 @@ export function ModelPicker() {
   const autoModels =
     !loading && modelsByProviders && modelsByProviders["auto"]
       ? modelsByProviders["auto"].filter((model) => {
-          if (
-            settings &&
-            !isDyadProEnabled(settings) &&
-            ["turbo", "value"].includes(model.apiName)
-          ) {
-            return false;
-          }
-          if (
-            settings &&
-            isDyadProEnabled(settings) &&
-            model.apiName === "free"
-          ) {
-            return false;
-          }
-          return true;
-        })
+        if (
+          settings &&
+          !isOrbixProEnabled(settings) &&
+          ["turbo", "value"].includes(model.apiName)
+        ) {
+          return false;
+        }
+        if (
+          settings &&
+          isOrbixProEnabled(settings) &&
+          model.apiName === "free"
+        ) {
+          return false;
+        }
+        return true;
+      })
       : [];
 
   // Determine availability of local models
@@ -149,22 +149,30 @@ export function ModelPicker() {
   const providerEntries =
     !loading && modelsByProviders
       ? Object.entries(modelsByProviders).filter(
-          ([providerId]) => providerId !== "auto",
-        )
+        ([providerId]) =>
+          providerId !== "auto" &&
+          ["google", "openrouter"].includes(providerId),
+      )
       : [];
   const primaryProviders = providerEntries.filter(([providerId, models]) => {
     if (models.length === 0) return false;
     const provider = providers?.find((p) => p.id === providerId);
     return !(provider && provider.secondary);
   });
-  if (settings && isDyadProEnabled(settings)) {
+
+  // Filter OpenRouter models to only free ones
+  primaryProviders.forEach((entry) => {
+    if (entry[0] === "openrouter") {
+      entry[1] = entry[1].filter(
+        (m) => m.dollarSigns !== undefined && m.dollarSigns === 0,
+      );
+    }
+  });
+
+  if (settings && isOrbixProEnabled(settings)) {
     primaryProviders.unshift(["auto", TURBO_MODELS]);
   }
-  const secondaryProviders = providerEntries.filter(([providerId, models]) => {
-    if (models.length === 0) return false;
-    const provider = providers?.find((p) => p.id === providerId);
-    return !!(provider && provider.secondary);
-  });
+  const secondaryProviders: typeof providerEntries = [];
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -221,7 +229,7 @@ export function ModelPicker() {
                       <DropdownMenuItem
                         className={
                           selectedModel.provider === "auto" &&
-                          selectedModel.name === model.apiName
+                            selectedModel.name === model.apiName
                             ? "bg-secondary"
                             : ""
                         }
@@ -266,11 +274,11 @@ export function ModelPicker() {
             {/* Primary providers as submenus */}
             {primaryProviders.map(([providerId, models]) => {
               models = models.filter((model) => {
-                // Don't show free models if Dyad Pro is enabled because
-                // we will use the paid models (in Dyad Pro backend) which
+                // Don't show free models if ORBIX Pro is enabled because
+                // we will use the paid models (in ORBIX Pro backend) which
                 // don't have the free limitations.
                 if (
-                  isDyadProEnabled(settings) &&
+                  isOrbixProEnabled(settings) &&
                   model.apiName.endsWith(":free")
                 ) {
                   return false;
@@ -280,7 +288,7 @@ export function ModelPicker() {
               const provider = providers?.find((p) => p.id === providerId);
               const providerDisplayName =
                 provider?.id === "auto"
-                  ? "Dyad Turbo"
+                  ? "ORBIX Turbo"
                   : (provider?.name ?? providerId);
               return (
                 <DropdownMenuSub key={providerId}>
@@ -290,7 +298,7 @@ export function ModelPicker() {
                         <span>{providerDisplayName}</span>
                         {provider?.type === "cloud" &&
                           !provider?.secondary &&
-                          isDyadProEnabled(settings) && (
+                          isOrbixProEnabled(settings) && (
                             <span className="text-[10px] bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-[length:200%_100%] animate-[shimmer_5s_ease-in-out_infinite] text-white px-1.5 py-0.5 rounded-full font-medium">
                               Pro
                             </span>
@@ -317,7 +325,7 @@ export function ModelPicker() {
                           <DropdownMenuItem
                             className={
                               selectedModel.provider === providerId &&
-                              selectedModel.name === model.apiName
+                                selectedModel.name === model.apiName
                                 ? "bg-secondary"
                                 : ""
                             }
@@ -399,7 +407,7 @@ export function ModelPicker() {
                                 <DropdownMenuItem
                                   className={
                                     selectedModel.provider === providerId &&
-                                    selectedModel.name === model.apiName
+                                      selectedModel.name === model.apiName
                                       ? "bg-secondary"
                                       : ""
                                   }
@@ -510,7 +518,7 @@ export function ModelPicker() {
                       key={`ollama-${model.modelName}`}
                       className={
                         selectedModel.provider === "ollama" &&
-                        selectedModel.name === model.modelName
+                          selectedModel.name === model.modelName
                           ? "bg-secondary"
                           : ""
                       }
@@ -591,7 +599,7 @@ export function ModelPicker() {
                       key={`lmstudio-${model.modelName}`}
                       className={
                         selectedModel.provider === "lmstudio" &&
-                        selectedModel.name === model.modelName
+                          selectedModel.name === model.modelName
                           ? "bg-secondary"
                           : ""
                       }

@@ -6,13 +6,13 @@ import { IpcClient } from "@/ipc/ipc_client";
 import { generateCuteAppName } from "@/lib/utils";
 import { useLoadApps } from "@/hooks/useLoadApps";
 import { useSettings } from "@/hooks/useSettings";
-import { SetupBanner } from "@/components/SetupBanner";
+
 import { isPreviewOpenAtom } from "@/atoms/viewAtoms";
 import { useState, useEffect, useCallback } from "react";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { HomeChatInput } from "@/components/chat/HomeChatInput";
 import { usePostHog } from "posthog-js/react";
-import { PrivacyBanner } from "@/components/TelemetryBanner";
+
 import { INSPIRATION_PROMPTS } from "@/prompts/inspiration_prompts";
 import { useAppVersion } from "@/hooks/useAppVersion";
 import {
@@ -33,7 +33,7 @@ import { ForceCloseDialog } from "@/components/ForceCloseDialog";
 import type { FileAttachment } from "@/ipc/ipc_types";
 import { NEON_TEMPLATE_IDS } from "@/shared/templates";
 import { neonTemplateHook } from "@/client_logic/template_hook";
-import { ProBanner } from "@/components/ProBanner";
+
 
 // Adding an export for attachments
 export interface HomeSubmitOptions {
@@ -208,7 +208,7 @@ export default function HomePage() {
         onClose={() => setForceCloseDialogOpen(false)}
         performanceData={performanceData}
       />
-      <SetupBanner />
+
 
       <div className="w-full">
         <ImportAppButton />
@@ -268,9 +268,9 @@ export default function HomePage() {
             </span>
           </button>
         </div>
-        <ProBanner />
+
       </div>
-      <PrivacyBanner />
+
 
       {/* Release Notes Dialog */}
       <Dialog open={releaseNotesOpen} onOpenChange={setReleaseNotesOpen}>
