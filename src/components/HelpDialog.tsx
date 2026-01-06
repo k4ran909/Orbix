@@ -121,7 +121,7 @@ ${debugInfo.logs.slice(-3_500) || "No logs available"}
       if (isOrbixProUser) {
         labels.push("pro");
       }
-      const githubIssueUrl = `https://github.com/Orbix-sh/Orbix/issues/new?title=${encodedTitle}&labels=${labels}&body=${encodedBody}`;
+      const githubIssueUrl = `https://github.com/K4ran909/Orbix/issues/new?title=${encodedTitle}&labels=${labels}&body=${encodedBody}`;
 
       // Open the pre-filled GitHub issue page
       IpcClient.getInstance().openExternalUrl(githubIssueUrl);
@@ -129,7 +129,7 @@ ${debugInfo.logs.slice(-3_500) || "No logs available"}
       console.error("Failed to prepare bug report:", error);
       // Fallback to opening the regular GitHub issue page
       IpcClient.getInstance().openExternalUrl(
-        "https://github.com/Orbix-sh/Orbix/issues/new",
+        "https://github.com/K4ran909/Orbix/issues/new",
       );
     } finally {
       setIsLoading(false);
@@ -246,7 +246,7 @@ Pro User ID: ${userBudget?.redactedUserId || "n/a"}
     if (isOrbixProUser) {
       labels.push("pro");
     }
-    const githubIssueUrl = `https://github.com/Orbix-sh/Orbix/issues/new?title=${encodedTitle}&labels=${labels}&body=${encodedBody}`;
+    const githubIssueUrl = `https://github.com/K4ran909/Orbix/issues/new?title=${encodedTitle}&labels=${labels}&body=${encodedBody}`;
 
     IpcClient.getInstance().openExternalUrl(githubIssueUrl);
     handleClose();

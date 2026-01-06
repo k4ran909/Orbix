@@ -17,7 +17,7 @@ async function verifyReleaseAssets() {
     console.log(`🔍 Verifying release assets for version ${version}...`);
 
     // GitHub API configuration
-    const owner = "Orbix-sh";
+    const owner = "K4ran909";
     const repo = "Orbix";
     const token = process.env.GITHUB_TOKEN;
 

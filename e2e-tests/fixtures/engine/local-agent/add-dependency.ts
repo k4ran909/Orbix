@@ -9,7 +9,7 @@ export const fixture: LocalAgentFixture = {
         {
           name: "add_dependency",
           args: {
-            packages: ["@Orbix-sh/supabase-management-js"],
+            packages: ["@K4ran909/supabase-management-js"],
           },
         },
       ],

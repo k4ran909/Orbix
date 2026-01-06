@@ -182,7 +182,7 @@ export const ROADMAP_TIP: MessageConfig = {
   ],
 };
 
-// Like Orbix? Star it on GitHub https://github.com/Orbix-sh/Orbix/
+// Like Orbix? Star it on GitHub https://github.com/K4ran909/Orbix/
 export const GITHUB_TIP: MessageConfig = {
   spans: [
     {
@@ -192,7 +192,7 @@ export const GITHUB_TIP: MessageConfig = {
     {
       type: "link",
       content: "GitHub",
-      url: "https://github.com/Orbix-sh/Orbix",
+      url: "https://github.com/K4ran909/Orbix",
     },
   ],
 };

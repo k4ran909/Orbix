@@ -1,15 +1,15 @@
-# @orbix-sh/react-vite-component-tagger
+# @k4ran909/react-vite-component-tagger
 
 A Vite plugin that automatically adds `data-Orbix-id` and `data-Orbix-name` attributes to your React components. This is useful for identifying components in the DOM, for example for testing or analytics.
 
 ## Installation
 
 ```bash
-npm install @orbix-sh/react-vite-component-tagger
+npm install @k4ran909/react-vite-component-tagger
 # or
-yarn add @orbix-sh/react-vite-component-tagger
+yarn add @k4ran909/react-vite-component-tagger
 # or
-pnpm add @orbix-sh/react-vite-component-tagger
+pnpm add @k4ran909/react-vite-component-tagger
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ Add the plugin to your `vite.config.ts` file:
 ```ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import OrbixTagger from "@orbix-sh/react-vite-component-tagger";
+import OrbixTagger from "@k4ran909/react-vite-component-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -40,13 +40,13 @@ Bump it to an alpha version and test in Orbix app, eg. `"version": "0.0.1-alpha.
 Then publish it:
 
 ```sh
-cd packages/@orbix-sh/react-vite-component-tagger/ && npm run prepublishOnly && npm publish
+cd packages/@k4ran909/react-vite-component-tagger/ && npm run prepublishOnly && npm publish
 ```
 
 Update the scaffold like this:
 
 ```sh
-cd scaffold && pnpm remove @orbix-sh/react-vite-component-tagger && pnpm add -D @orbix-sh/react-vite-component-tagger
+cd scaffold && pnpm remove @k4ran909/react-vite-component-tagger && pnpm add -D @k4ran909/react-vite-component-tagger
 ```
 
 Run the E2E tests and make sure it passes.

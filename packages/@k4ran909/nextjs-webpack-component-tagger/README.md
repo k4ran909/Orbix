@@ -1,15 +1,15 @@
-# @orbix-sh/nextjs-webpack-component-tagger
+# @k4ran909/nextjs-webpack-component-tagger
 
 A webpack loader for Next.js that automatically adds `data-Orbix-id` and `data-Orbix-name` attributes to your React components. This is useful for identifying components in the DOM, for example for testing or analytics.
 
 ## Installation
 
 ```bash
-npm install @orbix-sh/nextjs-webpack-component-tagger
+npm install @k4ran909/nextjs-webpack-component-tagger
 # or
-yarn add @orbix-sh/nextjs-webpack-component-tagger
+yarn add @k4ran909/nextjs-webpack-component-tagger
 # or
-pnpm add @orbix-sh/nextjs-webpack-component-tagger
+pnpm add @k4ran909/nextjs-webpack-component-tagger
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
         test: /\.(jsx|tsx)$/,
         exclude: /node_modules/,
         enforce: "pre",
-        use: "@orbix-sh/nextjs-webpack-component-tagger",
+        use: "@k4ran909/nextjs-webpack-component-tagger",
       });
     }
     return config;
@@ -49,7 +49,7 @@ Bump it to an alpha version and test in Orbix app, eg. `"version": "0.0.1-alpha.
 Then publish it:
 
 ```sh
-cd packages/@orbix-sh/nextjs-webpack-component-tagger/ && npm run prepublishOnly && npm publish
+cd packages/@k4ran909/nextjs-webpack-component-tagger/ && npm run prepublishOnly && npm publish
 ```
 
 Update the package version in the nextjs-template repo in your personal fork.

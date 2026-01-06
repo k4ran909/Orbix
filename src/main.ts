@@ -123,7 +123,7 @@ export async function onReady() {
       logger,
       updateSource: {
         type: UpdateSourceType.ElectronPublicUpdateService,
-        repo: "Orbix-sh/Orbix",
+        repo: "K4ran909/Orbix",
         host,
       },
     }); // additional configuration options available

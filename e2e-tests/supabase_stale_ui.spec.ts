@@ -1,6 +1,6 @@
 import { testSkipIfWindows } from "./helpers/test_helper";
 
-// https://github.com/Orbix-sh/Orbix/issues/269
+// https://github.com/K4ran909/Orbix/issues/269
 testSkipIfWindows("supabase - stale ui", async ({ po }) => {
   await po.setUp();
   await po.sendPrompt("tc=add-supabase");
