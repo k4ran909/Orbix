@@ -59,7 +59,7 @@ export abstract class BaseVirtualFileSystem {
   }
 
   /**
-   * Apply changes from a response containing dyad tags
+   * Apply changes from a response containing orbix tags
    */
   public applyResponseChanges({
     deletePaths,
@@ -199,8 +199,7 @@ export abstract class BaseVirtualFileSystem {
  */
 export class SyncVirtualFileSystemImpl
   extends BaseVirtualFileSystem
-  implements SyncVirtualFileSystem
-{
+  implements SyncVirtualFileSystem {
   private delegate: SyncFileSystemDelegate;
 
   constructor(baseDir: string, delegate?: SyncFileSystemDelegate) {

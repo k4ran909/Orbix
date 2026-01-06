@@ -5,7 +5,7 @@ import { readSettings, writeSettings } from "../main/settings";
 import {
   SupabaseManagementAPI,
   SupabaseManagementAPIError,
-} from "@dyad-sh/supabase-management-js";
+} from "@k4ran909/supabase-management-js";
 import log from "electron-log";
 import { IS_TEST_BUILD } from "../ipc/utils/test_utils";
 import type { SupabaseOrganizationCredentials } from "../lib/schemas";

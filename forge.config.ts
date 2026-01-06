@@ -159,7 +159,7 @@ const config: ForgeConfig = {
       name: "@electron-forge/publisher-github",
       config: {
         repository: {
-          owner: "Orbix-sh",
+          owner: "k4ran909",
           name: "Orbix",
         },
         draft: true,

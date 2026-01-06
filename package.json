@@ -6,7 +6,7 @@
   "main": ".vite/build/main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Orbix-sh/Orbix.git"
+    "url": "https://github.com/k4ran909/Orbix.git"
   },
   "engines": {
     "node": ">=20"
@@ -91,7 +91,7 @@
     "@ai-sdk/xai": "^2.0.16",
     "@babel/parser": "^7.28.5",
     "@biomejs/biome": "^1.9.4",
-    "@dyad-sh/supabase-management-js": "v1.0.1",
+    "@k4ran909/supabase-management-js": "github:k4ran909/supabase-management-js",
     "@lexical/react": "^0.33.1",
     "@modelcontextprotocol/sdk": "^1.17.5",
     "@monaco-editor/react": "^4.7.0-rc.0",
