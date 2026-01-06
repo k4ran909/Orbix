@@ -41,10 +41,6 @@
     "e2e:shard": "playwright test --shard"
   },
   "keywords": [],
-  "author": {
-    "name": "Will Chen",
-    "email": "willchen90@gmail.com"
-  },
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^7.10.2",
